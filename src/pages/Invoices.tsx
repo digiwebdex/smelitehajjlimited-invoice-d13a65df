@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Search, FileText, Filter, Download, X, Eye, Pencil, CalendarIcon } from "lucide-react";
+import { Plus, Search, FileText, Filter, Download, X, Eye, Pencil, CalendarIcon, FileSpreadsheet } from "lucide-react";
 import { format } from "date-fns";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import { mockInvoices, mockCompanies } from "@/data/mockData";
 import { Invoice, InvoiceStatus } from "@/types";
 import { cn } from "@/lib/utils";
 import { generateInvoicePdf } from "@/lib/generateInvoicePdf";
+import { exportInvoicesToExcel } from "@/lib/exportToExcel";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Invoices() {
@@ -138,13 +139,28 @@ export default function Invoices() {
               Manage and track all your invoices
             </p>
           </div>
-          <Button
-            onClick={() => navigate("/invoices/new")}
-            className="bg-accent hover:bg-accent/90 text-accent-foreground"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            New Invoice
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                exportInvoicesToExcel(filteredInvoices, getCompanyName);
+                toast({
+                  title: "Excel exported",
+                  description: `${filteredInvoices.length} invoice${filteredInvoices.length > 1 ? "s" : ""} exported to Excel.`,
+                });
+              }}
+            >
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Export Excel
+            </Button>
+            <Button
+              onClick={() => navigate("/invoices/new")}
+              className="bg-accent hover:bg-accent/90 text-accent-foreground"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              New Invoice
+            </Button>
+          </div>
         </div>
 
         {/* Batch Actions Bar */}
