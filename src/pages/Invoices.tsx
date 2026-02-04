@@ -197,6 +197,18 @@ export default function Invoices() {
 
         {/* Invoice List */}
         <div className="card-elevated overflow-hidden">
+          {/* Mobile Select All Header */}
+          <div className="md:hidden flex items-center gap-3 p-4 border-b border-border bg-muted/30">
+            <Checkbox
+              checked={filteredInvoices.length > 0 && selectedInvoices.size === filteredInvoices.length}
+              onCheckedChange={toggleSelectAll}
+              aria-label="Select all"
+            />
+            <span className="text-sm font-medium text-muted-foreground">
+              Select all ({filteredInvoices.length})
+            </span>
+          </div>
+
           {/* Table Header (Desktop) */}
           <div className="hidden md:grid md:grid-cols-12 gap-4 p-4 border-b border-border bg-muted/30 text-sm font-medium text-muted-foreground">
             <div className="col-span-1 flex items-center">
