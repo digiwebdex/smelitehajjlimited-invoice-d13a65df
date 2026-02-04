@@ -43,10 +43,10 @@ export function AppSidebar() {
           {!isCollapsed && (
             <div className="animate-fade-in">
               <h1 className="text-base font-semibold text-sidebar-accent-foreground">
-                InvoiceHub
+                S M Invoice
               </h1>
               <p className="text-xs text-sidebar-foreground">
-                Manage your invoices
+                Invoice Software
               </p>
             </div>
           )}
