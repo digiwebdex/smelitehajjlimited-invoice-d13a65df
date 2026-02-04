@@ -5,6 +5,7 @@ export const mockCompanies: Company[] = [
   {
     id: '1',
     name: 'TechCorp Solutions',
+    tagline: 'Excellence in Every Step',
     logo: undefined,
     email: 'billing@techcorp.com.bd',
     phone: '+880 1711-123456',
@@ -14,6 +15,7 @@ export const mockCompanies: Company[] = [
   {
     id: '2',
     name: 'Digital Dynamics',
+    tagline: 'Innovating Your Future',
     logo: undefined,
     email: 'accounts@digitaldynamics.com.bd',
     phone: '+880 1812-987654',
@@ -23,6 +25,7 @@ export const mockCompanies: Company[] = [
   {
     id: '3',
     name: 'CloudFirst Inc',
+    tagline: 'Cloud Solutions Made Simple',
     logo: undefined,
     email: 'finance@cloudfirst.com.bd',
     phone: '+880 1913-456789',

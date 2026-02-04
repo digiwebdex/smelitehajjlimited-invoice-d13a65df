@@ -140,6 +140,11 @@ export default function InvoiceView() {
                 <h2 className="text-xl font-bold text-primary">
                   {company?.name || "Company Name"}
                 </h2>
+                {company?.tagline && (
+                  <p className="text-sm text-muted-foreground italic">
+                    {company.tagline}
+                  </p>
+                )}
                 <p className="text-sm text-muted-foreground">
                   {company?.email}
                 </p>
