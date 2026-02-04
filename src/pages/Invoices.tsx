@@ -299,7 +299,7 @@ export default function Invoices() {
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-muted-foreground hover:text-accent"
-                        onClick={() => navigate(`/invoices/${invoice.id}`)}
+                        onClick={() => navigate(`/invoices/${invoice.id}/edit`)}
                         title="Edit Invoice"
                       >
                         <Pencil className="h-4 w-4" />
@@ -350,7 +350,7 @@ export default function Invoices() {
                           variant="ghost"
                           size="icon"
                           className="h-7 w-7 text-muted-foreground hover:text-accent"
-                          onClick={() => navigate(`/invoices/${invoice.id}`)}
+                          onClick={() => navigate(`/invoices/${invoice.id}/edit`)}
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
