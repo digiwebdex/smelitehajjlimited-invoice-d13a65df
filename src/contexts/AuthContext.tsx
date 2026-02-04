@@ -15,14 +15,14 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Hardcoded admin credentials - change these as needed
+// Admin credentials
 const ADMIN_CREDENTIALS = {
-  email: "admin@invoicehub.com",
-  password: "admin123",
-  name: "Admin User",
+  email: "smelitehajj@gmail.com",
+  password: "admin123@",
+  name: "SM Elite Hajj",
 };
 
-const AUTH_STORAGE_KEY = "invoicehub_auth";
+const AUTH_STORAGE_KEY = "sm_invoice_auth";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);

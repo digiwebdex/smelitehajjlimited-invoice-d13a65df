@@ -44,7 +44,7 @@ export default function Login() {
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-lg mb-4">
             <FileText className="h-7 w-7 text-primary-foreground" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">InvoiceHub</h1>
+          <h1 className="text-2xl font-bold text-foreground">S M Invoice Software</h1>
           <p className="text-sm text-muted-foreground mt-1">Invoice Management System</p>
         </div>
 
@@ -72,7 +72,7 @@ export default function Login() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="admin@invoicehub.com"
+                    placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-10"
@@ -110,19 +110,6 @@ export default function Login() {
                 )}
               </Button>
             </form>
-
-            {/* Credentials hint for demo */}
-            <div className="mt-6 p-3 rounded-lg bg-muted/50 border border-border">
-              <p className="text-xs text-muted-foreground text-center font-medium mb-1">
-                Demo Credentials
-              </p>
-              <p className="text-xs text-muted-foreground text-center">
-                Email: <span className="font-mono text-foreground">admin@invoicehub.com</span>
-              </p>
-              <p className="text-xs text-muted-foreground text-center">
-                Password: <span className="font-mono text-foreground">admin123</span>
-              </p>
-            </div>
           </CardContent>
         </Card>
 
