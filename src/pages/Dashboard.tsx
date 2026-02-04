@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DollarSign, AlertCircle, FileText, TrendingUp } from "lucide-react";
+import { DollarSign, AlertCircle, FileText, TrendingUp, CheckCircle, Clock, Percent } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { CompanyRevenueItem } from "@/components/dashboard/CompanyRevenueItem";
@@ -10,6 +9,17 @@ import { mockCompanies, mockInvoices, calculateRevenueStats } from "@/data/mockD
 export default function Dashboard() {
   const navigate = useNavigate();
   const stats = calculateRevenueStats(mockInvoices, mockCompanies);
+
+  // Calculate additional metrics
+  const paidInvoices = mockInvoices.filter((inv) => inv.status === "paid").length;
+  const partialInvoices = mockInvoices.filter((inv) => inv.status === "partial").length;
+  const unpaidInvoices = mockInvoices.filter((inv) => inv.status === "unpaid").length;
+  const collectionRate = stats.totalRevenue + stats.totalDue > 0 
+    ? (stats.totalRevenue / (stats.totalRevenue + stats.totalDue)) * 100 
+    : 0;
+  const avgInvoiceValue = mockInvoices.length > 0
+    ? mockInvoices.reduce((sum, inv) => sum + inv.totalAmount, 0) / mockInvoices.length
+    : 0;
 
   const formatCurrency = (amount: number) => {
     return `৳${new Intl.NumberFormat("en-BD", {
@@ -58,6 +68,54 @@ export default function Dashboard() {
             icon={<FileText className="h-6 w-6" />}
             variant="invoices"
           />
+        </div>
+
+        {/* Revenue Summary Widget */}
+        <div className="card-elevated p-6">
+          <div className="flex items-center gap-2 mb-6">
+            <DollarSign className="h-5 w-5 text-accent" />
+            <h2 className="text-lg font-semibold text-foreground">
+              Revenue Summary
+            </h2>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Percent className="h-4 w-4" />
+                Collection Rate
+              </div>
+              <p className="text-2xl font-bold text-foreground">{collectionRate.toFixed(1)}%</p>
+              <p className="text-xs text-muted-foreground">Of total invoiced amount</p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <TrendingUp className="h-4 w-4" />
+                Avg. Invoice Value
+              </div>
+              <p className="text-2xl font-bold text-foreground">{formatCurrency(avgInvoiceValue)}</p>
+              <p className="text-xs text-muted-foreground">Per invoice</p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <CheckCircle className="h-4 w-4 text-green-500" />
+                Paid Invoices
+              </div>
+              <p className="text-2xl font-bold text-green-600">{paidInvoices}</p>
+              <p className="text-xs text-muted-foreground">Fully settled</p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="h-4 w-4 text-yellow-500" />
+                Pending
+              </div>
+              <div className="flex items-baseline gap-2">
+                <p className="text-2xl font-bold text-yellow-600">{partialInvoices}</p>
+                <span className="text-sm text-muted-foreground">partial</span>
+                <p className="text-2xl font-bold text-red-600">{unpaidInvoices}</p>
+                <span className="text-sm text-muted-foreground">unpaid</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Charts and Company Revenue */}
