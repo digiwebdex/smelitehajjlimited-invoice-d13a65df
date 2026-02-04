@@ -1,19 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  FileText,
-  DollarSign,
-  CheckCircle,
-  Download,
-  Pencil,
-  Calendar,
-  Building2,
-  User,
-  Mail,
-  Phone,
-  MapPin,
-  Printer,
-} from "lucide-react";
+import { ArrowLeft, Download, Pencil, Printer } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { mockInvoices, mockCompanies } from "@/data/mockData";
@@ -28,7 +14,9 @@ export default function InvoiceView() {
   const { toast } = useToast();
 
   const invoice = mockInvoices.find((inv) => inv.id === id);
-  const company = invoice ? mockCompanies.find((c) => c.id === invoice.companyId) : null;
+  const company = invoice
+    ? mockCompanies.find((c) => c.id === invoice.companyId)
+    : null;
 
   const formatCurrency = (amount: number) => {
     return `৳${new Intl.NumberFormat("en-BD", {
@@ -41,16 +29,16 @@ export default function InvoiceView() {
     if (!date) return "—";
     return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
-      month: "long",
+      month: "short",
       day: "numeric",
     });
   };
 
   const getStatusBadge = (status: InvoiceStatus) => {
     const styles = {
-      paid: "status-paid",
-      partial: "status-partial",
-      unpaid: "status-unpaid",
+      paid: "bg-green-100 text-green-800",
+      partial: "bg-yellow-100 text-yellow-800",
+      unpaid: "bg-red-100 text-red-800",
     };
     return (
       <span
@@ -85,9 +73,9 @@ export default function InvoiceView() {
 
   return (
     <AppLayout>
-      <div className="space-y-6 animate-fade-in max-w-4xl">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-4">
+      <div className="min-h-screen print:bg-white print:min-h-0">
+        {/* Action Bar - Hidden on Print */}
+        <div className="max-w-4xl mx-auto mb-6 flex items-center justify-between print:hidden">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
@@ -103,12 +91,9 @@ export default function InvoiceView() {
               <p className="text-muted-foreground">Invoice Preview</p>
             </div>
           </div>
-          <div className="flex items-center gap-3 print:hidden">
+          <div className="flex items-center gap-3">
             {getStatusBadge(invoice.status)}
-            <Button
-              variant="outline"
-              onClick={() => window.print()}
-            >
+            <Button variant="outline" onClick={() => window.print()}>
               <Printer className="h-4 w-4 mr-2" />
               Print
             </Button>
@@ -135,208 +120,198 @@ export default function InvoiceView() {
           </div>
         </div>
 
-        {/* Invoice Content */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Invoice & Company Details */}
-            <div className="card-elevated p-6 space-y-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-accent" />
-                    Invoice Details
-                  </h2>
-                </div>
-                {company?.logo && (
-                  <img
-                    src={company.logo}
-                    alt={company.name}
-                    className="h-12 w-12 object-contain rounded-lg"
-                  />
-                )}
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground">Invoice Number</p>
-                  <p className="font-medium text-foreground">{invoice.invoiceNumber}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    <Building2 className="h-3.5 w-3.5" /> Company
-                  </p>
-                  <p className="font-medium text-foreground">{company?.name || "—"}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    <Calendar className="h-3.5 w-3.5" /> Invoice Date
-                  </p>
-                  <p className="font-medium text-foreground">{formatDate(invoice.date)}</p>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm text-muted-foreground flex items-center gap-1">
-                    <Calendar className="h-3.5 w-3.5" /> Due Date
-                  </p>
-                  <p className="font-medium text-foreground">{formatDate(invoice.dueDate)}</p>
-                </div>
-              </div>
-
-              {/* Client Information */}
-              <div className="pt-4 border-t border-border">
-                <h3 className="text-md font-medium text-foreground mb-4 flex items-center gap-2">
-                  <User className="h-4 w-4 text-accent" />
-                  Client Information
-                </h3>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-1">
-                    <p className="text-sm text-muted-foreground">Client Name</p>
-                    <p className="font-medium text-foreground">{invoice.clientName}</p>
-                  </div>
-                  {invoice.clientEmail && (
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <Mail className="h-3.5 w-3.5" /> Email
-                      </p>
-                      <p className="font-medium text-foreground">{invoice.clientEmail}</p>
-                    </div>
-                  )}
-                  {invoice.clientPhone && (
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <Phone className="h-3.5 w-3.5" /> Phone
-                      </p>
-                      <p className="font-medium text-foreground">{invoice.clientPhone}</p>
-                    </div>
-                  )}
-                  {invoice.clientAddress && (
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5" /> Address
-                      </p>
-                      <p className="font-medium text-foreground">{invoice.clientAddress}</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Line Items */}
-            <div className="card-elevated p-6 space-y-4">
-              <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-accent" />
-                Line Items
-              </h2>
-              <div className="border border-border rounded-lg overflow-hidden">
-                <div className="bg-muted/50 px-4 py-3 grid grid-cols-12 gap-4 text-sm font-medium text-muted-foreground">
-                  <div className="col-span-1">#</div>
-                  <div className="col-span-8">Description</div>
-                  <div className="col-span-3 text-right">Amount</div>
-                </div>
-                <div className="divide-y divide-border">
-                  {invoice.items.map((item, index) => (
-                    <div
-                      key={item.id}
-                      className="px-4 py-3 grid grid-cols-12 gap-4 items-center"
-                    >
-                      <div className="col-span-1 text-sm text-muted-foreground">
-                        {index + 1}
-                      </div>
-                      <div className="col-span-8 font-medium text-foreground">
-                        {item.title || "—"}
-                      </div>
-                      <div className="col-span-3 text-right font-medium text-foreground">
-                        {formatCurrency(item.amount)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Payment History */}
-            <div className="card-elevated p-6 space-y-4">
-              <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-accent" />
-                Payment History
-              </h2>
-              {invoice.installments.length === 0 ? (
-                <p className="text-sm text-muted-foreground py-4 text-center">
-                  No payments recorded yet.
-                </p>
+        {/* Invoice Document */}
+        <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-8 print:shadow-none print:p-0 print:rounded-none">
+          {/* HEADER */}
+          <div className="flex justify-between items-start border-b border-gray-200 pb-6">
+            <div className="flex items-center gap-4">
+              {company?.logo ? (
+                <img
+                  src={company.logo}
+                  alt={company.name}
+                  className="w-16 h-16 rounded-full object-cover border-2 border-gray-100"
+                />
               ) : (
-                <div className="border border-border rounded-lg overflow-hidden">
-                  <div className="bg-muted/50 px-4 py-3 grid grid-cols-12 gap-4 text-sm font-medium text-muted-foreground">
-                    <div className="col-span-2">#</div>
-                    <div className="col-span-5">Date</div>
-                    <div className="col-span-5 text-right">Amount</div>
-                  </div>
-                  <div className="divide-y divide-border">
-                    {invoice.installments.map((inst, index) => (
-                      <div
-                        key={inst.id}
-                        className="px-4 py-3 grid grid-cols-12 gap-4 items-center bg-success/5"
-                      >
-                        <div className="col-span-2 text-sm text-success font-medium">
-                          #{index + 1}
-                        </div>
-                        <div className="col-span-5 text-foreground">
-                          {formatDate(inst.paidDate)}
-                        </div>
-                        <div className="col-span-5 text-right font-medium text-success">
-                          {formatCurrency(inst.amount)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-white text-xl font-bold">
+                  {company?.name?.charAt(0) || "C"}
                 </div>
               )}
+              <div>
+                <h2 className="text-xl font-bold text-primary">
+                  {company?.name || "Company Name"}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {company?.email}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {company?.phone}
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <h1 className="text-3xl font-bold text-primary">INVOICE</h1>
+              <p className="text-accent font-semibold text-lg mt-1">
+                {invoice.invoiceNumber}
+              </p>
+              <div className="mt-2">{getStatusBadge(invoice.status)}</div>
             </div>
           </div>
 
-          {/* Summary Sidebar */}
-          <div className="lg:col-span-1">
-            <div className="card-elevated p-6 sticky top-6 space-y-4">
-              <h2 className="text-lg font-semibold text-foreground">Summary</h2>
+          {/* BILL TO + DATES */}
+          <div className="flex justify-between mt-8">
+            <div>
+              <p className="text-muted-foreground text-sm uppercase tracking-wide mb-2">
+                Bill To
+              </p>
+              <h3 className="font-bold text-lg text-foreground">
+                {invoice.clientName}
+              </h3>
+              {invoice.clientEmail && (
+                <p className="text-sm text-muted-foreground">
+                  {invoice.clientEmail}
+                </p>
+              )}
+              {invoice.clientPhone && (
+                <p className="text-sm text-muted-foreground">
+                  {invoice.clientPhone}
+                </p>
+              )}
+              {invoice.clientAddress && (
+                <p className="text-sm text-muted-foreground">
+                  {invoice.clientAddress}
+                </p>
+              )}
+            </div>
+            <div className="text-right text-sm space-y-1">
+              <p>
+                <span className="text-muted-foreground">Invoice Date:</span>{" "}
+                <span className="font-medium">{formatDate(invoice.date)}</span>
+              </p>
+              <p>
+                <span className="text-muted-foreground">Due Date:</span>{" "}
+                <span className="font-medium">
+                  {formatDate(invoice.dueDate)}
+                </span>
+              </p>
+            </div>
+          </div>
 
-              <div className="space-y-3">
+          {/* ITEM TABLE */}
+          <div className="mt-10">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b-2 border-gray-200">
+                  <th className="text-left py-3 text-muted-foreground font-semibold uppercase tracking-wide">
+                    #
+                  </th>
+                  <th className="text-left py-3 text-muted-foreground font-semibold uppercase tracking-wide">
+                    Description
+                  </th>
+                  <th className="text-right py-3 text-muted-foreground font-semibold uppercase tracking-wide">
+                    Amount
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoice.items.map((item, i) => (
+                  <tr key={item.id} className="border-b border-gray-100">
+                    <td className="py-4 text-muted-foreground">{i + 1}</td>
+                    <td className="py-4 font-medium text-foreground">
+                      {item.title || "—"}
+                    </td>
+                    <td className="py-4 text-right font-semibold text-foreground">
+                      {formatCurrency(item.amount)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* SUMMARY */}
+          <div className="flex justify-end mt-8">
+            <div className="w-72 text-sm space-y-3">
+              <div className="flex justify-between py-2">
+                <span className="text-muted-foreground">Subtotal</span>
+                <span className="font-medium">
+                  {formatCurrency(invoice.subtotal || 0)}
+                </span>
+              </div>
+              {(invoice.vatRate || 0) > 0 && (
                 <div className="flex justify-between py-2">
-                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="text-muted-foreground">
+                    VAT ({invoice.vatRate}%)
+                  </span>
                   <span className="font-medium">
-                    {formatCurrency(invoice.subtotal || 0)}
+                    {formatCurrency(invoice.vatAmount || 0)}
                   </span>
                 </div>
-                {(invoice.vatRate || 0) > 0 && (
-                  <div className="flex justify-between py-2 border-t border-border">
-                    <span className="text-muted-foreground">VAT ({invoice.vatRate}%)</span>
-                    <span className="font-medium">
-                      {formatCurrency(invoice.vatAmount || 0)}
-                    </span>
-                  </div>
+              )}
+              <div className="flex justify-between py-2 border-t border-gray-200 font-bold text-base">
+                <span>Total</span>
+                <span>{formatCurrency(invoice.totalAmount)}</span>
+              </div>
+              <div className="flex justify-between py-2 text-green-600 font-semibold">
+                <span>Total Paid</span>
+                <span>{formatCurrency(invoice.paidAmount)}</span>
+              </div>
+              <div
+                className={cn(
+                  "flex justify-between px-4 py-3 rounded-lg font-bold",
+                  invoice.dueAmount > 0
+                    ? "bg-red-600 text-white"
+                    : "bg-green-600 text-white"
                 )}
-                <div className="flex justify-between py-2 border-t border-border">
-                  <span className="text-muted-foreground">Total</span>
-                  <span className="font-medium">
-                    {formatCurrency(invoice.totalAmount)}
-                  </span>
-                </div>
-                <div className="flex justify-between py-2 border-t border-border">
-                  <span className="text-muted-foreground">Paid</span>
-                  <span className="font-medium text-success">
-                    {formatCurrency(invoice.paidAmount)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-3 border-t-2 border-foreground/10">
-                  <span className="font-semibold text-foreground">Amount Due</span>
-                  <span className="text-2xl font-bold text-destructive">
-                    {formatCurrency(invoice.dueAmount)}
-                  </span>
-                </div>
+              >
+                <span>{invoice.dueAmount > 0 ? "Balance Due" : "Paid in Full"}</span>
+                <span>{formatCurrency(invoice.dueAmount)}</span>
               </div>
-              <div className="pt-4 border-t border-border">
-                <p className="text-sm text-muted-foreground">Status</p>
-                <div className="mt-2">{getStatusBadge(invoice.status)}</div>
+            </div>
+          </div>
+
+          {/* PAYMENT HISTORY */}
+          {invoice.installments.length > 0 && (
+            <div className="mt-10 border border-gray-200 rounded-lg p-6 bg-gray-50 print:bg-gray-50">
+              <h4 className="font-semibold text-foreground mb-4 uppercase tracking-wide text-sm">
+                Payment History
+              </h4>
+              <div className="space-y-2">
+                {invoice.installments.map((pay, i) => (
+                  <div
+                    key={pay.id}
+                    className="flex justify-between items-center bg-white p-4 rounded-lg border border-gray-100"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-muted-foreground">
+                        #{i + 1}
+                      </span>
+                      <span className="text-sm text-foreground">
+                        {formatDate(pay.paidDate)}
+                      </span>
+                    </div>
+                    <div className="text-green-600 font-semibold">
+                      {formatCurrency(pay.amount)}
+                    </div>
+                  </div>
+                ))}
               </div>
+            </div>
+          )}
+
+          {/* FOOTER */}
+          <div className="flex justify-between items-center mt-12 pt-6 border-t border-gray-200">
+            <div>
+              <p className="text-sm text-muted-foreground">
+                Thank you for your business!
+              </p>
+              {company?.address && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {company.address}
+                </p>
+              )}
+            </div>
+            <div className="text-right text-xs text-muted-foreground">
+              <p>Generated on {formatDate(new Date())}</p>
             </div>
           </div>
         </div>
