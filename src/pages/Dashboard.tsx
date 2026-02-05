@@ -73,7 +73,7 @@ export default function Dashboard() {
   };
 
   const handleCompanyClick = (companyId: string) => {
-    navigate(`/companies/${companyId}`);
+    navigate(`/invoices?company=${companyId}`);
   };
 
   if (isLoading) {
