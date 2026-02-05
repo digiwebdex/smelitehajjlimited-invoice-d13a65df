@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Plus, Search, FileText, Filter, Download, X, Eye, Pencil, CalendarIcon, FileSpreadsheet, Loader2 } from "lucide-react";
 import { format } from "date-fns";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -26,6 +26,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export default function Invoices() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { data: invoices = [], isLoading: invoicesLoading } = useInvoices();
   const { data: companies = [], isLoading: companiesLoading } = useCompanies();
@@ -36,6 +37,14 @@ export default function Invoices() {
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [selectedInvoices, setSelectedInvoices] = useState<Set<string>>(new Set());
+
+  // Read company filter from URL query params
+  useEffect(() => {
+    const companyParam = searchParams.get("company");
+    if (companyParam) {
+      setCompanyFilter(companyParam);
+    }
+  }, [searchParams]);
 
   const isLoading = invoicesLoading || companiesLoading;
 
