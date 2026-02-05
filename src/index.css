@@ -353,8 +353,11 @@
 
   .rounded-xl,
   .rounded-lg,
-  .rounded-md {
+  .rounded-md,
+  .border,
+  [class*="border-"] {
     border-radius: 0 !important;
+    border: none !important;
   }
 
   /* ===== BALANCE BOX COLORS - CRITICAL ===== */
