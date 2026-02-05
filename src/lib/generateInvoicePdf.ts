@@ -154,13 +154,6 @@ export const generateInvoicePdf = async (invoice: Invoice, company?: Company) =>
   doc.setFont("helvetica", "bold");
   doc.text(invoice.clientName, margin + 5, yPos + 1);
 
-  // Due Date on right (orange color)
-  doc.setFontSize(8);
-  doc.setFont("helvetica", "normal");
-  doc.setTextColor(...orangeColor);
-  doc.text("DUE DATE :", pageWidth - margin - 48, yPos + 1);
-  doc.setFont("helvetica", "bold");
-  doc.text(formatDate(invoice.dueDate), pageWidth - margin, yPos + 1, { align: "right" });
 
   yPos += 6;
 

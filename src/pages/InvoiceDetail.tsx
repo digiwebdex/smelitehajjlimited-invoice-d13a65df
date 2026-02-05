@@ -339,15 +339,6 @@ export default function InvoiceDetail() {
                     onChange={(e) => setInvoiceDate(e.target.value)}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="dueDate">Due Date</Label>
-                  <Input
-                    id="dueDate"
-                    type="date"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                  />
-                </div>
               </div>
 
               {/* Client Information */}
