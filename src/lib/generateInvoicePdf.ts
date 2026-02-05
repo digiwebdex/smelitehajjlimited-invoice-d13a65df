@@ -394,21 +394,25 @@ export const generateInvoicePdf = async (invoice: Invoice, company?: Company) =>
     doc.text(addressLines, margin, footerDetailY);
   }
 
-  // QR Code with labels
+  // QR Code with labels - positioned to align with footer content
   const invoiceUrl = `${window.location.origin}/view/${invoice.id}`;
+  const qrSize = 24;
+  const qrX = pageWidth - margin - qrSize;
+  const qrY = footerY - 8;
+  
   try {
     const qrDataUrl = await QRCode.toDataURL(invoiceUrl, {
-      width: 100,
+      width: 120,
       margin: 1,
       errorCorrectionLevel: "M",
     });
-    doc.addImage(qrDataUrl, "PNG", pageWidth - margin - 22, footerY - 10, 22, 22);
+    doc.addImage(qrDataUrl, "PNG", qrX, qrY, qrSize, qrSize);
 
-    // QR Labels
+    // QR Labels - centered below QR code
+    const qrCenterX = qrX + qrSize / 2;
     doc.setFontSize(6);
     doc.setTextColor(...mutedColor);
-    doc.text("Scan to view invoice", pageWidth - margin - 11, footerY + 14, { align: "center" });
-    doc.text("Scan for details", pageWidth - margin - 11, footerY + 17, { align: "center" });
+    doc.text("Scan to view invoice", qrCenterX, qrY + qrSize + 3, { align: "center" });
   } catch (error) {
     console.error("Failed to generate QR code:", error);
   }
