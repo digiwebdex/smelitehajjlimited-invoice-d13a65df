@@ -3,7 +3,8 @@ import QRCode from "qrcode";
 import { Invoice, Company } from "@/types";
 
 const formatCurrency = (amount: number): string => {
-  return `৳${new Intl.NumberFormat("en-BD", {
+  // Use "Tk" instead of "৳" because jsPDF doesn't support Bengali Unicode with default fonts
+  return `Tk ${new Intl.NumberFormat("en-BD", {
     style: "decimal",
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
