@@ -17,17 +17,22 @@ export default function Login() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [authErrorCode, setAuthErrorCode] = useState<string | null>(null);
+  const [isResending, setIsResending] = useState(false);
 
-  const { login, signup } = useAuth();
+  const { login, signup, resendConfirmationEmail } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/";
 
+  const isEmailNotConfirmed = authErrorCode === "email_not_confirmed";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setSuccess("");
+    setAuthErrorCode(null);
     setIsLoading(true);
 
     if (isSignUp) {
@@ -45,10 +50,26 @@ export default function Login() {
         navigate(from, { replace: true });
       } else {
         setError(result.error || "Login failed");
+        setAuthErrorCode(result.code ?? null);
       }
     }
 
     setIsLoading(false);
+  };
+
+  const handleResendVerification = async () => {
+    if (!email) return;
+
+    setError("");
+    setSuccess("");
+    setIsResending(true);
+    const result = await resendConfirmationEmail(email);
+    if (result.success) {
+      setSuccess("Verification email sent. Please check your inbox (and spam/junk).");
+    } else {
+      setError(result.error || "Could not resend verification email");
+    }
+    setIsResending(false);
   };
 
   return (
@@ -84,6 +105,30 @@ export default function Login() {
                   <AlertCircle className="h-4 w-4" />
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
+              )}
+
+              {error && isEmailNotConfirmed && (
+                <div className="space-y-2">
+                  <p className="text-xs text-muted-foreground">
+                    This account must be verified before you can sign in.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={handleResendVerification}
+                    disabled={isLoading || isResending || !email}
+                  >
+                    {isResending ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Sending verification email...
+                      </>
+                    ) : (
+                      "Resend verification email"
+                    )}
+                  </Button>
+                </div>
               )}
 
               {success && (
@@ -167,6 +212,7 @@ export default function Login() {
                         setIsSignUp(false);
                         setError("");
                         setSuccess("");
+                        setAuthErrorCode(null);
                       }}
                       className="text-primary hover:underline font-medium"
                     >
@@ -182,6 +228,7 @@ export default function Login() {
                         setIsSignUp(true);
                         setError("");
                         setSuccess("");
+                        setAuthErrorCode(null);
                       }}
                       className="text-primary hover:underline font-medium"
                     >
