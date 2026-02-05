@@ -27,8 +27,8 @@ export default function InvoiceView() {
 
   const formatCurrency = (amount: number) => {
     return `৳${new Intl.NumberFormat("en-BD", {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount)}`;
   };
 
@@ -36,7 +36,7 @@ export default function InvoiceView() {
     if (!dateString) return "—";
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
-      month: "short",
+      month: "long",
       day: "numeric",
     });
   };
@@ -395,11 +395,14 @@ export default function InvoiceView() {
                       <span className="text-sm font-medium text-foreground">
                         {formatDate(pay.paid_date)}
                       </span>
-                      <span className="px-2 py-1 bg-primary text-primary-foreground text-xs rounded font-medium">
-                        Payment
+                      <span className="px-2 py-1 bg-gray-400 text-white text-xs rounded font-medium">
+                        Bank Transfer
                       </span>
                       <span className="px-2 py-1 bg-accent text-accent-foreground text-xs rounded font-medium">
-                        #{i + 1}
+                        Advance
+                      </span>
+                      <span className="text-muted-foreground text-sm">
+                        — Advance Payment
                       </span>
                     </div>
                     <div className="text-accent font-bold text-lg">
