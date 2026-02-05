@@ -8,15 +8,15 @@
   :root {
     /* Core backgrounds */
     --background: 220 20% 97%;
-    --foreground: 222 47% 11%;
+    --foreground: 230 55% 35%;
 
     /* Cards with subtle depth */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 230 55% 35%;
 
     /* Popover surfaces */
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 230 55% 35%;
 
     /* Primary - Logo Mid Blue (Indigo) */
     --primary: 230 55% 40%;
@@ -24,7 +24,7 @@
 
     /* Secondary - Slate blue */
     --secondary: 215 25% 92%;
-    --secondary-foreground: 222 47% 15%;
+    --secondary-foreground: 230 55% 35%;
 
     /* Muted surfaces */
     --muted: 220 14% 95%;
