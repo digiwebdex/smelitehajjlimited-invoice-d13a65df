@@ -204,18 +204,12 @@ export const generateInvoicePdf = async (invoice: Invoice, company?: Company) =>
 
   // Table Rows
   invoice.items.forEach((item) => {
-    // Description with underline (accent color link style)
-    doc.setTextColor(...accentColor);
+    // Description (foreground color - matching web view)
+    doc.setTextColor(...textColor);
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
     const title = item.title || "—";
     doc.text(title, tableX, yPos);
-    
-    // Underline for description
-    const titleWidth = doc.getTextWidth(title);
-    doc.setDrawColor(...accentColor);
-    doc.setLineWidth(0.2);
-    doc.line(tableX, yPos + 1, tableX + titleWidth, yPos + 1);
 
     // Qty
     doc.setTextColor(...mutedColor);
