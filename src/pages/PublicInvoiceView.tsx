@@ -52,21 +52,21 @@ import { Invoice, Company } from "@/types";
  
    const isLoading = invoiceLoading || companyLoading;
  
-   const formatCurrency = (amount: number) => {
-     return `৳${new Intl.NumberFormat("en-BD", {
-       minimumFractionDigits: 0,
-       maximumFractionDigits: 0,
-     }).format(amount)}`;
-   };
+    const formatCurrency = (amount: number) => {
+      return `৳${new Intl.NumberFormat("en-BD", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(amount)}`;
+    };
  
-   const formatDate = (dateString: string | undefined | null) => {
-     if (!dateString) return "—";
-     return new Date(dateString).toLocaleDateString("en-US", {
-       year: "numeric",
-       month: "short",
-       day: "numeric",
-     });
-   };
+    const formatDate = (dateString: string | undefined | null) => {
+      if (!dateString) return "—";
+      return new Date(dateString).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    };
  
    const getStatusBadge = (status: string) => {
      const styles: Record<string, string> = {
@@ -338,11 +338,14 @@ import { Invoice, Company } from "@/types";
                       <span className="text-sm font-medium text-foreground">
                         {formatDate(pay.paid_date)}
                       </span>
-                      <span className="px-2 py-1 bg-primary text-primary-foreground text-xs rounded font-medium">
-                        Payment
+                      <span className="px-2 py-1 bg-gray-400 text-white text-xs rounded font-medium">
+                        Bank Transfer
                       </span>
                       <span className="px-2 py-1 bg-accent text-accent-foreground text-xs rounded font-medium">
-                        #{i + 1}
+                        Advance
+                      </span>
+                      <span className="text-muted-foreground text-sm">
+                        — Advance Payment
                       </span>
                     </div>
                     <div className="text-accent font-bold text-lg">

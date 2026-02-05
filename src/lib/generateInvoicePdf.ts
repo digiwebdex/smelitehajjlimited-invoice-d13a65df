@@ -3,10 +3,10 @@ import QRCode from "qrcode";
 import { Invoice, Company } from "@/types";
 
 const formatCurrency = (amount: number): string => {
-  return `৳${new Intl.NumberFormat("en-BD", {
+  return `BDT ${new Intl.NumberFormat("en-BD", {
     style: "decimal",
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(amount)}`;
 };
 
@@ -15,7 +15,7 @@ const formatDate = (date: Date | undefined): string => {
   const d = date instanceof Date ? date : new Date(date);
   return d.toLocaleDateString("en-US", {
     year: "numeric",
-    month: "short",
+    month: "long",
     day: "numeric",
   });
 };
@@ -121,9 +121,15 @@ export const generateInvoicePdf = async (invoice: Invoice, company?: Company) =>
   doc.line(margin, yPos, pageWidth - margin, yPos);
   yPos += 6;
 
+  // Calculate height for Bill To section based on content
+  let billToHeight = 20; // Base height
+  if (invoice.clientEmail) billToHeight += 4;
+  if (invoice.clientPhone) billToHeight += 4;
+  if (invoice.clientAddress) billToHeight += 4;
+
   // Left accent bar for Bill To
   doc.setFillColor(...accentColor);
-  doc.rect(margin, yPos, 1.5, 24, "F");
+  doc.rect(margin, yPos, 1.5, billToHeight, "F");
 
   // Bill To label
   doc.setTextColor(...mutedColor);
@@ -135,7 +141,7 @@ export const generateInvoicePdf = async (invoice: Invoice, company?: Company) =>
   doc.setFontSize(8);
   doc.setTextColor(...mutedColor);
   doc.setFont("helvetica", "normal");
-  doc.text("INVOICE DATE :", pageWidth - margin - 42, yPos + 4);
+  doc.text("INVOICE DATE :", pageWidth - margin - 48, yPos + 4);
   doc.setTextColor(...textColor);
   doc.setFont("helvetica", "bold");
   doc.text(formatDate(invoice.date), pageWidth - margin, yPos + 4, { align: "right" });
@@ -152,16 +158,26 @@ export const generateInvoicePdf = async (invoice: Invoice, company?: Company) =>
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...orangeColor);
-  doc.text("DUE DATE :", pageWidth - margin - 42, yPos + 1);
+  doc.text("DUE DATE :", pageWidth - margin - 48, yPos + 1);
   doc.setFont("helvetica", "bold");
   doc.text(formatDate(invoice.dueDate), pageWidth - margin, yPos + 1, { align: "right" });
 
   yPos += 6;
 
-  // Client address (muted, smaller)
+  // Client details (muted, smaller) - email, phone, address separately
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...mutedColor);
+
+  if (invoice.clientEmail) {
+    doc.text(invoice.clientEmail, margin + 5, yPos);
+    yPos += 4;
+  }
+  
+  if (invoice.clientPhone) {
+    doc.text(invoice.clientPhone, margin + 5, yPos);
+    yPos += 4;
+  }
 
   if (invoice.clientAddress) {
     const addressLines = doc.splitTextToSize(invoice.clientAddress, 90);
@@ -169,7 +185,7 @@ export const generateInvoicePdf = async (invoice: Invoice, company?: Company) =>
     yPos += addressLines.length * 4;
   }
 
-  yPos += 12;
+  yPos += 10;
 
   // ===================== ITEMS TABLE =====================
   const tableX = margin;
@@ -299,44 +315,58 @@ export const generateInvoicePdf = async (invoice: Invoice, company?: Company) =>
 
   // ===================== PAYMENT HISTORY =====================
   if (invoice.installments.length > 0) {
+    // Payment History section box
+    doc.setDrawColor(...borderColor);
+    doc.setLineWidth(0.3);
+    const historyBoxHeight = 10 + invoice.installments.length * 12;
+    doc.roundedRect(margin, yPos, contentWidth, historyBoxHeight, 2, 2, "S");
+    
+    yPos += 6;
+    
     // Payment History header
     doc.setTextColor(...textColor);
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
-    doc.text("Payment History", margin, yPos);
+    doc.text("PAYMENT HISTORY", margin + 5, yPos);
     yPos += 6;
 
     // Payment entries
     invoice.installments.forEach((inst, index) => {
-      // Left accent bar
-      doc.setFillColor(...accentColor);
-      doc.rect(margin, yPos, 1.5, 8, "F");
+      // Left accent bar (gray)
+      doc.setFillColor(209, 213, 219); // Gray-300
+      doc.rect(margin + 5, yPos, 1.5, 8, "F");
 
       // Date
       doc.setFontSize(8);
-      doc.setTextColor(...mutedColor);
+      doc.setTextColor(...textColor);
       doc.setFont("helvetica", "normal");
-      doc.text(formatDate(inst.paidDate), margin + 5, yPos + 5);
+      doc.text(formatDate(inst.paidDate), margin + 10, yPos + 5);
 
-      // Payment badge
-      doc.setFillColor(...primaryColor);
-      doc.roundedRect(margin + 35, yPos + 1, 16, 5, 1, 1, "F");
+      // Bank Transfer badge (gray)
+      doc.setFillColor(156, 163, 175); // Gray-400
+      doc.roundedRect(margin + 50, yPos + 1, 22, 5, 1, 1, "F");
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(6);
       doc.setFont("helvetica", "bold");
-      doc.text("Payment", margin + 43, yPos + 4.5, { align: "center" });
+      doc.text("Bank Transfer", margin + 61, yPos + 4.5, { align: "center" });
 
-      // Number badge
+      // Advance badge (teal/accent)
       doc.setFillColor(...accentColor);
-      doc.roundedRect(margin + 53, yPos + 1, 10, 5, 1, 1, "F");
+      doc.roundedRect(margin + 74, yPos + 1, 14, 5, 1, 1, "F");
       doc.setTextColor(255, 255, 255);
-      doc.text(`#${index + 1}`, margin + 58, yPos + 4.5, { align: "center" });
+      doc.text("Advance", margin + 81, yPos + 4.5, { align: "center" });
 
-      // Amount (accent/teal color)
+      // Description
+      doc.setTextColor(...mutedColor);
+      doc.setFontSize(7);
+      doc.setFont("helvetica", "normal");
+      doc.text("— Advance Payment", margin + 90, yPos + 5);
+
+      // Amount (teal color, bold)
       doc.setTextColor(...accentColor);
       doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
-      doc.text(formatCurrency(inst.amount), pageWidth - margin, yPos + 5, { align: "right" });
+      doc.text(formatCurrency(inst.amount), pageWidth - margin - 5, yPos + 5, { align: "right" });
 
       yPos += 12;
     });
