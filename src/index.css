@@ -347,7 +347,8 @@
   .shadow-md,
   .shadow-sm,
   .shadow,
-  [class*="shadow-"] {
+  [class*="shadow-"],
+  [class*="ring-"] {
     box-shadow: none !important;
   }
 
@@ -481,8 +482,8 @@
 
   /* Payment history box */
   .border.border-gray-200.rounded-lg {
-    border: 1px solid #e5e7eb !important;
-    border-radius: 8px !important;
+    border: none !important;
+    border-radius: 0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
