@@ -299,9 +299,9 @@
     overflow: hidden !important;
   }
 
-  /* Reset page margins */
+  /* Reset page margins - smaller for fitting content */
   @page {
-    margin: 10mm;
+    margin: 8mm;
     size: A4;
   }
 
@@ -311,6 +311,7 @@
     color: black !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    color-adjust: exact !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
@@ -334,52 +335,70 @@
     margin-left: 0 !important;
   }
 
-  /* Invoice document styling for print */
+  /* Invoice document styling for print - NO BORDERS */
   .max-w-4xl {
     max-width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
   }
 
-  /* Ensure cards print nicely */
+  /* Remove ALL borders and shadows from cards */
   .card-elevated,
   .bg-white,
   .shadow-lg,
-  .rounded-xl {
+  .shadow-md,
+  .shadow-sm,
+  .shadow,
+  .rounded-xl,
+  .rounded-lg,
+  .rounded-md,
+  .border,
+  [class*="border-"],
+  [class*="shadow-"] {
     box-shadow: none !important;
     border: none !important;
     border-radius: 0 !important;
     break-inside: avoid;
   }
 
-  /* Status badges print colors - force exact colors */
+  /* Status badges - FORCE exact background colors */
   .bg-green-100 {
     background-color: #dcfce7 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   .text-green-800 {
     color: #166534 !important;
   }
   .bg-yellow-100 {
     background-color: #fef3c7 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   .text-yellow-800 {
     color: #92400e !important;
   }
   .bg-red-100 {
     background-color: #fee2e2 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   .text-red-800 {
     color: #991b1b !important;
   }
 
-  /* Balance due box colors */
+  /* Balance due box colors - FORCE background */
   .bg-red-600 {
     background-color: #dc2626 !important;
     color: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   .bg-green-600 {
     background-color: #16a34a !important;
     color: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   /* Green text for paid amount */
@@ -387,17 +406,24 @@
     color: #16a34a !important;
   }
 
+  /* Teal/accent colors */
+  .text-teal-600,
+  .text-accent {
+    color: #0d9488 !important;
+  }
+
   /* Payment history section */
   .bg-gray-50 {
     background-color: #f9fafb !important;
-  }
-  .border-gray-200 {
-    border-color: #e5e7eb !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* Page breaks */
-  .page-break {
-    page-break-before: always;
+  /* Remove all remaining borders */
+  .border-gray-200,
+  .border-gray-100,
+  .border-border {
+    border-color: transparent !important;
   }
 
   /* Ensure text is black */
@@ -411,14 +437,29 @@
     color: #6b7280 !important;
   }
 
-  /* Ensure tables print well */
+  /* Ensure tables print well - compact spacing */
   table {
     width: 100% !important;
     border-collapse: collapse !important;
   }
 
-  /* Print footer with QR code */
+  /* Compact text for fitting on one page */
+  * {
+    font-size: 95% !important;
+    line-height: 1.3 !important;
+  }
+
+  h1 { font-size: 1.4rem !important; }
+  h2 { font-size: 1.2rem !important; }
+  h3 { font-size: 1rem !important; }
+
+  /* Footer border - keep this one */
   .border-t {
     border-top: 1px solid #e5e7eb !important;
+  }
+
+  /* Page breaks */
+  .page-break {
+    page-break-before: always;
   }
 }
