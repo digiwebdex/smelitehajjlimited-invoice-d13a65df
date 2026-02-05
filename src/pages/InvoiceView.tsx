@@ -229,7 +229,7 @@ export default function InvoiceView() {
         {/* Invoice Document */}
         <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-8 print:shadow-none print:p-0 print:rounded-none">
           {/* HEADER */}
-          <div className="flex justify-between items-start border-b border-gray-200 pb-6">
+          <div className="flex justify-between items-start pb-6">
             <div className="flex items-center gap-4">
               {company?.logo_url ? (
                 <img
@@ -251,12 +251,6 @@ export default function InvoiceView() {
                     {company.tagline}
                   </p>
                 )}
-                <p className="text-sm text-muted-foreground">
-                  {company?.email}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {company?.phone}
-                </p>
               </div>
             </div>
             <div className="text-right">
@@ -264,13 +258,12 @@ export default function InvoiceView() {
               <p className="text-accent font-semibold text-lg mt-1">
                 {invoice.invoice_number}
               </p>
-              <div className="mt-2">{getStatusBadge(invoice.status)}</div>
             </div>
           </div>
 
           {/* BILL TO + DATES */}
-          <div className="flex justify-between mt-8">
-            <div>
+          <div className="flex justify-between mt-6 pt-6 border-t border-gray-200">
+            <div className="border-l-4 border-accent pl-4">
               <p className="text-muted-foreground text-sm uppercase tracking-wide mb-2">
                 Bill To
               </p>
@@ -293,14 +286,14 @@ export default function InvoiceView() {
                 </p>
               )}
             </div>
-            <div className="text-right text-sm space-y-1">
+            <div className="text-right text-sm space-y-2">
               <p>
-                <span className="text-muted-foreground">Invoice Date:</span>{" "}
-                <span className="font-medium">{formatDate(invoice.invoice_date)}</span>
+                <span className="text-muted-foreground font-medium">INVOICE DATE :</span>{" "}
+                <span className="font-semibold text-foreground">{formatDate(invoice.invoice_date)}</span>
               </p>
               <p>
-                <span className="text-muted-foreground">Due Date:</span>{" "}
-                <span className="font-medium">
+                <span className="text-orange-500 font-medium">DUE DATE :</span>{" "}
+                <span className="font-semibold text-orange-500">
                   {formatDate(invoice.due_date)}
                 </span>
               </p>
@@ -311,24 +304,30 @@ export default function InvoiceView() {
           <div className="mt-10">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b-2 border-gray-200">
-                  <th className="text-left py-3 text-muted-foreground font-semibold uppercase tracking-wide">
-                    #
-                  </th>
+                <tr className="border-b-2 border-gray-300">
                   <th className="text-left py-3 text-muted-foreground font-semibold uppercase tracking-wide">
                     Description
                   </th>
+                  <th className="text-center py-3 text-muted-foreground font-semibold uppercase tracking-wide w-20">
+                    Qty
+                  </th>
                   <th className="text-right py-3 text-muted-foreground font-semibold uppercase tracking-wide">
-                    Amount
+                    Unit Price
+                  </th>
+                  <th className="text-right py-3 text-muted-foreground font-semibold uppercase tracking-wide">
+                    Total
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {items.map((item, i) => (
-                  <tr key={item.id} className="border-b border-gray-100">
-                    <td className="py-4 text-muted-foreground">{i + 1}</td>
+                {items.map((item) => (
+                  <tr key={item.id} className="border-b border-gray-200">
                     <td className="py-4 font-medium text-foreground">
                       {item.title || "—"}
+                    </td>
+                    <td className="py-4 text-center text-muted-foreground">1</td>
+                    <td className="py-4 text-right text-foreground">
+                      {formatCurrency(Number(item.amount))}
                     </td>
                     <td className="py-4 text-right font-semibold text-foreground">
                       {formatCurrency(Number(item.amount))}
@@ -341,40 +340,40 @@ export default function InvoiceView() {
 
           {/* SUMMARY */}
           <div className="flex justify-end mt-8">
-            <div className="w-72 text-sm space-y-3">
-              <div className="flex justify-between py-2">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-medium">
+            <div className="w-80 text-sm">
+              <div className="flex justify-between py-3 border-b border-gray-100">
+                <span className="text-muted-foreground font-medium">Subtotal</span>
+                <span className="font-semibold text-foreground">
                   {formatCurrency(Number(invoice.subtotal) || 0)}
                 </span>
               </div>
-              {Number(invoice.vat_rate) > 0 && (
-                <div className="flex justify-between py-2">
-                  <span className="text-muted-foreground">
-                    VAT ({invoice.vat_rate}%)
-                  </span>
-                  <span className="font-medium">
-                    {formatCurrency(Number(invoice.vat_amount) || 0)}
-                  </span>
-                </div>
-              )}
-              <div className="flex justify-between py-2 border-t border-gray-200 font-bold text-base">
-                <span>Total</span>
-                <span>{formatCurrency(Number(invoice.total_amount))}</span>
+              <div className="flex justify-between py-3 border-b border-gray-100">
+                <span className="text-muted-foreground font-medium">Tax</span>
+                <span className="font-semibold text-foreground">
+                  {formatCurrency(Number(invoice.vat_amount) || 0)}
+                </span>
               </div>
-              <div className="flex justify-between py-2 text-green-600 font-semibold">
-                <span>Total Paid</span>
-                <span>{formatCurrency(Number(invoice.paid_amount))}</span>
+              <div className="flex justify-between py-3 border-b border-gray-100">
+                <span className="text-foreground font-bold">Total</span>
+                <span className="font-bold text-foreground">
+                  {formatCurrency(Number(invoice.total_amount))}
+                </span>
+              </div>
+              <div className="flex justify-between py-3 border-b border-gray-100">
+                <span className="text-accent font-bold">Total Paid</span>
+                <span className="font-bold text-accent">
+                  {formatCurrency(Number(invoice.paid_amount))}
+                </span>
               </div>
               <div
                 className={cn(
-                  "flex justify-between px-4 py-3 rounded-lg font-bold",
+                  "flex justify-between px-4 py-3 mt-2 font-bold",
                   Number(invoice.due_amount) > 0
-                    ? "bg-red-600 text-white"
-                    : "bg-green-600 text-white"
+                    ? "bg-red-500 text-white"
+                    : "bg-green-500 text-white"
                 )}
               >
-                <span>{Number(invoice.due_amount) > 0 ? "Balance Due" : "Paid in Full"}</span>
+                <span>{Number(invoice.due_amount) > 0 ? "Balance" : "Paid in Full"}</span>
                 <span>{formatCurrency(Number(invoice.due_amount))}</span>
               </div>
             </div>
@@ -382,25 +381,28 @@ export default function InvoiceView() {
 
           {/* PAYMENT HISTORY */}
           {installments.length > 0 && (
-            <div className="mt-10 border border-gray-200 rounded-lg p-6 bg-gray-50 print:bg-gray-50">
+            <div className="mt-10 border border-gray-200 rounded-lg p-6">
               <h4 className="font-semibold text-foreground mb-4 uppercase tracking-wide text-sm">
                 Payment History
               </h4>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {installments.map((pay, i) => (
                   <div
                     key={pay.id}
-                    className="flex justify-between items-center bg-white p-4 rounded-lg border border-gray-100"
+                    className="flex justify-between items-center border-l-4 border-gray-300 pl-4 py-2"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-muted-foreground">
-                        #{i + 1}
-                      </span>
-                      <span className="text-sm text-foreground">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <span className="text-sm font-medium text-foreground">
                         {formatDate(pay.paid_date)}
                       </span>
+                      <span className="px-2 py-1 bg-primary text-primary-foreground text-xs rounded font-medium">
+                        Payment
+                      </span>
+                      <span className="px-2 py-1 bg-accent text-accent-foreground text-xs rounded font-medium">
+                        #{i + 1}
+                      </span>
                     </div>
-                    <div className="text-green-600 font-semibold">
+                    <div className="text-accent font-bold text-lg">
                       {formatCurrency(Number(pay.amount))}
                     </div>
                   </div>
@@ -410,13 +412,13 @@ export default function InvoiceView() {
           )}
 
           {/* FOOTER */}
-          <div className="flex justify-between items-start mt-12 pt-6 border-t border-gray-200">
+          <div className="flex justify-between items-end mt-12 pt-6 border-t border-gray-200">
             <div>
               <p className="text-sm text-muted-foreground">
-                Thank you for your business!
+                Thank you for staying with us.
               </p>
               {company?.email && (
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-2">
                   {company.email}
                 </p>
               )}
@@ -430,11 +432,11 @@ export default function InvoiceView() {
                   {company.address}
                 </p>
               )}
-              <p className="text-xs text-muted-foreground mt-2">
-                Generated on {formatDate(new Date().toISOString())}
-              </p>
             </div>
-            <InvoiceQRCode invoiceId={invoice.id} size={70} />
+            <div className="text-center">
+              <InvoiceQRCode invoiceId={invoice.id} size={70} />
+              <p className="text-xs text-muted-foreground mt-1">Scan for details</p>
+            </div>
           </div>
         </div>
       </div>
