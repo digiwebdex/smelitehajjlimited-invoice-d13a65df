@@ -286,16 +286,10 @@ export default function InvoiceView() {
                 </p>
               )}
             </div>
-            <div className="text-right text-sm space-y-2">
+            <div className="text-right text-sm">
               <p>
                 <span className="text-muted-foreground font-medium">INVOICE DATE :</span>{" "}
                 <span className="font-semibold text-foreground">{formatDate(invoice.invoice_date)}</span>
-              </p>
-              <p>
-                <span className="text-orange-500 font-medium">DUE DATE :</span>{" "}
-                <span className="font-semibold text-orange-500">
-                  {formatDate(invoice.due_date)}
-                </span>
               </p>
             </div>
           </div>
