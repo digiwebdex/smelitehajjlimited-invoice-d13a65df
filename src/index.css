@@ -449,17 +449,12 @@
     color: #991b1b !important;
   }
 
-  /* ===== KEEP IMPORTANT BORDERS ===== */
+  /* ===== HIDE LEFT ACCENT BORDERS IN PRINT ===== */
   .border-l-4 {
-    border-left-width: 4px !important;
-    border-left-style: solid !important;
+    border-left: none !important;
   }
-  .border-l-4.border-accent {
-    border-left-color: #14b8a6 !important;
-  }
-  .border-l-4.border-gray-300 {
-    border-left-color: #d1d5db !important;
-  }
+
+  /* Keep horizontal borders */
   .border-t {
     border-top: 1px solid #e5e7eb !important;
   }
