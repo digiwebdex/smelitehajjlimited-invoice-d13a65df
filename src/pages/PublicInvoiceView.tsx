@@ -201,6 +201,9 @@ import { Invoice, Company } from "@/types";
               <p className="text-orange-500 font-semibold text-lg mt-1">
                 {invoice.invoice_number}
               </p>
+              <div className="mt-2">
+                {getStatusBadge(invoice.status)}
+              </div>
             </div>
           </div>
 

@@ -439,6 +439,27 @@
   }
 
   /* ===== STATUS BADGES ===== */
+  .status-paid {
+    background-color: #dcfce7 !important;
+    color: #166534 !important;
+    border: 1px solid #86efac !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .status-partial {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    border: 1px solid #fcd34d !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .status-unpaid {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+    border: 1px solid #fca5a5 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
   .bg-green-100 {
     background-color: #dcfce7 !important;
     -webkit-print-color-adjust: exact !important;
