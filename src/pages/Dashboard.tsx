@@ -1,9 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { DollarSign, AlertCircle, FileText, TrendingUp, CheckCircle, Clock, Percent, Loader2 } from "lucide-react";
+import { DollarSign, AlertCircle, FileText, TrendingUp, CheckCircle, Clock, Percent, Loader2, Users, Building2, PieChart } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { StatCard } from "@/components/dashboard/StatCard";
 import { CompanyRevenueItem } from "@/components/dashboard/CompanyRevenueItem";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
+import { InvoiceStatusPieChart } from "@/components/dashboard/InvoiceStatusPieChart";
+import { TopClientsChart } from "@/components/dashboard/TopClientsChart";
+import { WeeklyTrendChart } from "@/components/dashboard/WeeklyTrendChart";
+import { CompanyComparisonChart } from "@/components/dashboard/CompanyComparisonChart";
 import { useCompanies } from "@/hooks/useCompanies";
 import { useInvoices } from "@/hooks/useInvoices";
 import { useMemo } from "react";
@@ -51,7 +55,69 @@ export default function Dashboard() {
         revenue,
       }));
 
-    return { totalRevenue, totalDue, totalInvoices, companyRevenue, monthlyRevenue };
+    // Top clients by revenue
+    const clientRevenue: { [key: string]: number } = {};
+    invoices.forEach((inv) => {
+      clientRevenue[inv.client_name] = (clientRevenue[inv.client_name] || 0) + Number(inv.paid_amount);
+    });
+    const topClients = Object.entries(clientRevenue)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5)
+      .map(([name, revenue]) => ({ name, revenue }));
+
+    // Weekly trend (last 8 weeks)
+    const weeklyData: { [key: string]: { revenue: number; invoices: number } } = {};
+    const now = new Date();
+    for (let i = 7; i >= 0; i--) {
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - (i * 7));
+      const weekKey = `W${8 - i}`;
+      weeklyData[weekKey] = { revenue: 0, invoices: 0 };
+    }
+    
+    invoices.forEach((inv) => {
+      if (inv.installments) {
+        inv.installments.forEach((inst) => {
+          const instDate = new Date(inst.paid_date);
+          const weeksAgo = Math.floor((now.getTime() - instDate.getTime()) / (7 * 24 * 60 * 60 * 1000));
+          if (weeksAgo >= 0 && weeksAgo < 8) {
+            const weekKey = `W${8 - weeksAgo}`;
+            if (weeklyData[weekKey]) {
+              weeklyData[weekKey].revenue += Number(inst.amount);
+            }
+          }
+        });
+      }
+    });
+
+    const weeklyTrend = Object.entries(weeklyData).map(([week, data]) => ({
+      week,
+      revenue: data.revenue,
+      invoices: data.invoices,
+    }));
+
+    // Company comparison data
+    const companyComparison = companies.map((company) => {
+      const companyInvoices = invoices.filter((inv) => inv.company_id === company.id);
+      const paid = companyInvoices.reduce((sum, inv) => sum + Number(inv.paid_amount), 0);
+      const due = companyInvoices.reduce((sum, inv) => sum + Number(inv.due_amount), 0);
+      return {
+        name: company.name,
+        paid,
+        due,
+      };
+    }).filter((c) => c.paid > 0 || c.due > 0);
+
+    return { 
+      totalRevenue, 
+      totalDue, 
+      totalInvoices, 
+      companyRevenue, 
+      monthlyRevenue,
+      topClients,
+      weeklyTrend,
+      companyComparison,
+    };
   }, [companies, invoices]);
 
   // Calculate additional metrics
@@ -172,7 +238,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Charts and Company Revenue */}
+        {/* Charts Row 1 */}
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Monthly Revenue Chart */}
           <div className="card-elevated p-6">
@@ -183,6 +249,60 @@ export default function Dashboard() {
               </h2>
             </div>
             <RevenueChart data={stats.monthlyRevenue} />
+          </div>
+
+          {/* Invoice Status Pie Chart */}
+          <div className="card-elevated p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <PieChart className="h-5 w-5 text-accent" />
+              <h2 className="text-lg font-semibold text-foreground">
+                Invoice Status Distribution
+              </h2>
+            </div>
+            <InvoiceStatusPieChart 
+              paid={paidInvoices} 
+              partial={partialInvoices} 
+              unpaid={unpaidInvoices} 
+            />
+          </div>
+        </div>
+
+        {/* Charts Row 2 */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Top Clients Chart */}
+          <div className="card-elevated p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <Users className="h-5 w-5 text-accent" />
+              <h2 className="text-lg font-semibold text-foreground">
+                Top Clients by Revenue
+              </h2>
+            </div>
+            <TopClientsChart data={stats.topClients} />
+          </div>
+
+          {/* Weekly Trend Chart */}
+          <div className="card-elevated p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <TrendingUp className="h-5 w-5 text-accent" />
+              <h2 className="text-lg font-semibold text-foreground">
+                Weekly Payment Trend
+              </h2>
+            </div>
+            <WeeklyTrendChart data={stats.weeklyTrend} />
+          </div>
+        </div>
+
+        {/* Charts Row 3 */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Company Comparison Chart */}
+          <div className="card-elevated p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <Building2 className="h-5 w-5 text-accent" />
+              <h2 className="text-lg font-semibold text-foreground">
+                Company Revenue Comparison
+              </h2>
+            </div>
+            <CompanyComparisonChart data={stats.companyComparison} />
           </div>
 
           {/* Company Revenue Breakdown */}
