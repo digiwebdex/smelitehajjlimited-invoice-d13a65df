@@ -13,6 +13,17 @@ interface Props {
   onRemove: () => void;
 }
 
+const BN_DIGITS = "০১২৩৪৫৬৭৮৯";
+
+function normalizeNumericInput(raw: string) {
+  // Supports Bangla digits (০-৯) and common separators.
+  // Keeps '.' for decimals.
+  return raw
+    .trim()
+    .replace(/[০-৯]/g, (d) => String(BN_DIGITS.indexOf(d)))
+    .replace(/[,\s৳]/g, "");
+}
+
 export function LineItemCard({
   item,
   index,
@@ -57,10 +68,11 @@ export function LineItemCard({
           <Input
             type="text"
             inputMode="numeric"
-            pattern="[0-9]*"
+            pattern="[0-9০-৯]*"
             value={item.qty}
             onChange={(e) => {
-              const val = parseInt(e.target.value) || 0;
+              const normalized = normalizeNumericInput(e.target.value);
+              const val = parseInt(normalized, 10) || 0;
               onUpdate("qty", val < 1 ? 1 : val);
             }}
             min={1}
@@ -76,10 +88,11 @@ export function LineItemCard({
             <Input
               type="text"
               inputMode="decimal"
-              pattern="[0-9]*\.?[0-9]*"
+              pattern="[0-9০-৯]*\\.?[0-9০-৯]*"
               value={item.unitPrice}
               onChange={(e) => {
-                const val = parseFloat(e.target.value) || 0;
+                const normalized = normalizeNumericInput(e.target.value);
+                const val = parseFloat(normalized) || 0;
                 onUpdate("unitPrice", val < 0 ? 0 : val);
               }}
               className="pl-7 text-right tabular-nums"
