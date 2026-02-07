@@ -455,6 +455,18 @@
     print-color-adjust: exact !important;
   }
 
+  /* ===== GRAY TEXT COLORS - Footer ===== */
+  .text-gray-500 {
+    color: #6b7280 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .text-gray-400 {
+    color: #9ca3af !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   /* ===== PAYMENT BADGE COLORS ===== */
   .bg-gray-400 {
     background-color: #9ca3af !important;
