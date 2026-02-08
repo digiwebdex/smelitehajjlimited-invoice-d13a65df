@@ -293,7 +293,7 @@ export default function InvoiceView() {
             <div className="text-right text-sm">
               <p>
                 <span className="text-muted-foreground font-medium">INVOICE DATE :</span>{" "}
-                <span className="font-semibold text-foreground">{formatDate(invoice.invoice_date)}</span>
+                <span className="font-semibold text-black">{formatDate(invoice.invoice_date)}</span>
               </p>
             </div>
           </div>
