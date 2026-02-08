@@ -56,16 +56,18 @@ export const generateInvoicePdf = async (
   const balanceBgColor = hexToRgb(t.balance_bg_color);
   const balanceTextColor = hexToRgb(t.balance_text_color);
 
-  // Branding settings
-  const headerName = b.company_name || company?.name || "Company Name";
-  const headerTagline = b.tagline || company?.tagline;
-  const headerLogo = b.company_logo || company?.logo;
-  const footerEmail = b.email || company?.email;
-  const footerPhone = b.phone || company?.phone;
-  const footerAddress = [b.address_line1, b.address_line2].filter(Boolean).join(", ") || company?.address;
-  const thankYouText = b.thank_you_text || "Thank you for staying with us.";
-  const showQRCode = b.show_qr_code ?? true;
-  const footerAlignment = b.footer_alignment || "center";
+  // Branding settings - company data takes priority over global branding
+  const headerName = company?.name || b.company_name || "Company Name";
+  const headerTagline = company?.tagline || b.tagline;
+  const headerLogo = company?.logo || b.company_logo;
+  const footerEmail = company?.email || b.email;
+  const footerPhone = company?.phone || b.phone;
+  const addressLine1 = company?.address_line1 || b.address_line1;
+  const addressLine2 = company?.address_line2 || b.address_line2;
+  const footerAddress = [addressLine1, addressLine2].filter(Boolean).join(", ") || company?.address;
+  const thankYouText = company?.thank_you_text || b.thank_you_text || "Thank you for staying with us.";
+  const showQRCode = company?.show_qr_code ?? b.show_qr_code ?? true;
+  const footerWebsite = company?.website || b.website;
 
   let yPos = margin;
 
@@ -488,12 +490,12 @@ export const generateInvoicePdf = async (
   doc.setFont("helvetica", "normal");
   
   let addressY = bottomRowY;
-  if (b.address_line1) {
-    doc.text(b.address_line1, margin, addressY);
+  if (addressLine1) {
+    doc.text(addressLine1, margin, addressY);
     addressY += 3.5;
   }
-  if (b.address_line2) {
-    doc.text(b.address_line2, margin, addressY);
+  if (addressLine2) {
+    doc.text(addressLine2, margin, addressY);
     addressY += 3.5;
   }
   if (footerPhone) {
@@ -504,9 +506,9 @@ export const generateInvoicePdf = async (
     doc.text(footerEmail, margin, addressY);
     addressY += 3.5;
   }
-  if (b.website) {
+  if (footerWebsite) {
     doc.setTextColor(...primaryColor);
-    doc.text(b.website, margin, addressY);
+    doc.text(footerWebsite, margin, addressY);
   }
 
   // RIGHT SIDE - QR Code

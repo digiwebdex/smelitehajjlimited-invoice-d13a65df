@@ -24,6 +24,12 @@ interface CompanyData {
   email?: string | null;
   phone?: string | null;
   address?: string | null;
+  address_line1?: string | null;
+  address_line2?: string | null;
+  website?: string | null;
+  thank_you_text?: string | null;
+  show_qr_code?: boolean | null;
+  footer_alignment?: string | null;
 }
 
 interface InvoiceData {
@@ -91,18 +97,21 @@ export const ThemedInvoiceDocument = ({
     }
   };
 
-  // Use branding settings for header, fallback to company data
-  const headerLogo = b.company_logo || company?.logo_url;
-  const headerName = b.company_name || company?.name || "Company Name";
-  const headerTagline = b.tagline || company?.tagline;
+  // Use company data first, then branding as fallback
+  const headerLogo = company?.logo_url || b.company_logo;
+  const headerName = company?.name || b.company_name || "Company Name";
+  const headerTagline = company?.tagline || b.tagline;
 
-  // Footer settings from branding
-  const footerEmail = b.email || company?.email;
-  const footerPhone = b.phone || company?.phone;
-  const footerAddress = [b.address_line1, b.address_line2].filter(Boolean).join(", ") || company?.address;
-  const footerThankYou = b.thank_you_text || "Thank you for staying with us.";
-  const showQR = b.show_qr_code ?? true;
-  const footerAlign = b.footer_alignment || "center";
+  // Footer settings - company data takes priority
+  const footerEmail = company?.email || b.email;
+  const footerPhone = company?.phone || b.phone;
+  const addressLine1 = company?.address_line1 || b.address_line1;
+  const addressLine2 = company?.address_line2 || b.address_line2;
+  const footerAddress = [addressLine1, addressLine2].filter(Boolean).join(", ") || company?.address;
+  const footerThankYou = company?.thank_you_text || b.thank_you_text || "Thank you for staying with us.";
+  const showQR = company?.show_qr_code ?? b.show_qr_code ?? true;
+  const footerAlign = company?.footer_alignment || b.footer_alignment || "center";
+  const footerWebsite = company?.website || b.website;
 
   const footerAlignClass = {
     left: "text-left items-start",
@@ -382,20 +391,20 @@ export const ThemedInvoiceDocument = ({
         <div className="flex justify-between items-end">
           {/* LEFT SIDE - ADDRESS */}
           <div className="text-xs space-y-0.5" style={{ color: t.footer_text_color }}>
-            {b.address_line1 && (
-              <p>{b.address_line1}</p>
+            {addressLine1 && (
+              <p>{addressLine1}</p>
             )}
-            {b.address_line2 && (
-              <p>{b.address_line2}</p>
+            {addressLine2 && (
+              <p>{addressLine2}</p>
             )}
-            {(footerPhone) && (
+            {footerPhone && (
               <p>{footerPhone}</p>
             )}
             {footerEmail && (
               <p>{footerEmail}</p>
             )}
-            {b.website && (
-              <p style={{ color: t.primary_color }}>{b.website}</p>
+            {footerWebsite && (
+              <p style={{ color: t.primary_color }}>{footerWebsite}</p>
             )}
           </div>
 

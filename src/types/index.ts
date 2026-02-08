@@ -8,6 +8,12 @@ export interface Company {
   email: string;
   phone: string;
   address: string;
+  address_line1?: string;
+  address_line2?: string;
+  website?: string;
+  thank_you_text?: string;
+  show_qr_code?: boolean;
+  footer_alignment?: string;
   createdAt: Date;
 }
 

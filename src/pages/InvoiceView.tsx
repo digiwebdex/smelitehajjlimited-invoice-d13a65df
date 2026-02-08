@@ -110,6 +110,12 @@ export default function InvoiceView() {
     email: company.email,
     phone: company.phone,
     address: company.address,
+    address_line1: company.address_line1,
+    address_line2: company.address_line2,
+    website: company.website,
+    thank_you_text: company.thank_you_text,
+    show_qr_code: company.show_qr_code,
+    footer_alignment: company.footer_alignment,
   } : null;
 
   const handleDownloadPdf = async () => {
@@ -151,6 +157,12 @@ export default function InvoiceView() {
       email: company.email || "",
       phone: company.phone || "",
       address: company.address || "",
+      address_line1: company.address_line1 || undefined,
+      address_line2: company.address_line2 || undefined,
+      website: company.website || undefined,
+      thank_you_text: company.thank_you_text || undefined,
+      show_qr_code: company.show_qr_code ?? true,
+      footer_alignment: company.footer_alignment || undefined,
       createdAt: new Date(company.created_at),
     } : undefined;
     

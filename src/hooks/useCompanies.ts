@@ -12,6 +12,12 @@ export interface Company {
   phone: string | null;
   address: string | null;
   logo_url: string | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  website: string | null;
+  thank_you_text: string | null;
+  show_qr_code: boolean | null;
+  footer_alignment: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -23,6 +29,12 @@ export interface CompanyInput {
   phone?: string;
   address?: string;
   logo_url?: string;
+  address_line1?: string;
+  address_line2?: string;
+  website?: string;
+  thank_you_text?: string;
+  show_qr_code?: boolean;
+  footer_alignment?: string;
 }
 
 export function useCompanies() {

@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import { Plus, Pencil, Trash2, Building2, Mail, Phone, MapPin, Calendar, Search, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Plus, Pencil, Trash2, Building2, Mail, Phone, MapPin, Calendar, Search, Loader2, Palette } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ import { useCompanies, useCreateCompany, useUpdateCompany, useDeleteCompany, Com
 import { LogoUpload } from "@/components/LogoUpload";
 
 export default function Companies() {
+  const navigate = useNavigate();
   const { data: companies = [], isLoading } = useCompanies();
   const createCompany = useCreateCompany();
   const updateCompany = useUpdateCompany();
@@ -311,8 +313,18 @@ export default function Companies() {
                   <Button
                     variant="ghost"
                     size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-accent"
+                    onClick={() => navigate(`/companies/${company.id}/branding`)}
+                    title="Branding Settings"
+                  >
+                    <Palette className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="h-8 w-8 text-muted-foreground hover:text-foreground"
                     onClick={() => handleOpenDialog(company)}
+                    title="Edit Company"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -321,6 +333,7 @@ export default function Companies() {
                     size="icon"
                     className="h-8 w-8 text-muted-foreground hover:text-destructive"
                     onClick={() => setDeleteCompanyId(company.id)}
+                    title="Delete Company"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
