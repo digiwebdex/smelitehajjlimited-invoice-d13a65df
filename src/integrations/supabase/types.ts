@@ -17,39 +17,57 @@ export type Database = {
       companies: {
         Row: {
           address: string | null
+          address_line1: string | null
+          address_line2: string | null
           created_at: string
           email: string | null
+          footer_alignment: string | null
           id: string
           logo_url: string | null
           name: string
           phone: string | null
+          show_qr_code: boolean | null
           tagline: string | null
+          thank_you_text: string | null
           updated_at: string
           user_id: string
+          website: string | null
         }
         Insert: {
           address?: string | null
+          address_line1?: string | null
+          address_line2?: string | null
           created_at?: string
           email?: string | null
+          footer_alignment?: string | null
           id?: string
           logo_url?: string | null
           name: string
           phone?: string | null
+          show_qr_code?: boolean | null
           tagline?: string | null
+          thank_you_text?: string | null
           updated_at?: string
           user_id: string
+          website?: string | null
         }
         Update: {
           address?: string | null
+          address_line1?: string | null
+          address_line2?: string | null
           created_at?: string
           email?: string | null
+          footer_alignment?: string | null
           id?: string
           logo_url?: string | null
           name?: string
           phone?: string | null
+          show_qr_code?: boolean | null
           tagline?: string | null
+          thank_you_text?: string | null
           updated_at?: string
           user_id?: string
+          website?: string | null
         }
         Relationships: []
       }
