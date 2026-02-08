@@ -258,20 +258,25 @@ export const generateInvoicePdf = async (
 
   // ===================== ITEMS TABLE =====================
   const tableX = margin;
-  // Fixed column positions for proper alignment - adjusted for better spacing
-  const col1X = tableX; // Description - left aligned
-  const col2X = tableX + contentWidth * 0.50; // Qty - center aligned
-  const col3X = tableX + contentWidth * 0.68; // Unit Price - center aligned  
-  const col4X = tableX + contentWidth; // Total - right aligned
+
+  // Column widths (match web layout: Qty center, Unit Price right, Total right)
+  const descColWidth = contentWidth * 0.56;
+  const qtyColWidth = contentWidth * 0.12;
+  const unitColWidth = contentWidth * 0.16;
+
+  const descX = tableX;
+  const qtyCenterX = tableX + descColWidth + qtyColWidth / 2;
+  const unitRightX = tableX + descColWidth + qtyColWidth + unitColWidth;
+  const totalRightX = tableX + contentWidth;
 
   // Table Header with underline
   doc.setTextColor(...mutedColor);
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
-  doc.text("DESCRIPTION", col1X, yPos);
-  doc.text("QTY", col2X, yPos, { align: "center" });
-  doc.text("UNIT PRICE", col3X, yPos, { align: "center" });
-  doc.text("TOTAL", col4X, yPos, { align: "right" });
+  doc.text("DESCRIPTION", descX, yPos);
+  doc.text("QTY", qtyCenterX, yPos, { align: "center" });
+  doc.text("UNIT PRICE", unitRightX, yPos, { align: "right" });
+  doc.text("TOTAL", totalRightX, yPos, { align: "right" });
 
   yPos += 3;
   doc.setDrawColor(...borderColor);
@@ -279,39 +284,46 @@ export const generateInvoicePdf = async (
   doc.line(tableX, yPos, tableX + contentWidth, yPos);
   yPos += 6;
 
-  // Table Rows
+  // Table Rows (wrap description; vertically center other columns to the row)
+  const lineHeight = 4.2;
   invoice.items.forEach((item) => {
-    // Description (black color)
+    const rowStartY = yPos;
+
+    // Description (wrap within description column)
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(9);
     doc.setFont("helvetica", "normal");
-    const title = item.title || "—";
-    doc.text(title, col1X, yPos);
 
-    // Qty - black color, centered (use actual qty from item)
+    const title = item.title || "—";
+    const titleLines = doc.splitTextToSize(title, descColWidth - 2);
+    doc.text(titleLines, descX, rowStartY);
+
+    const rowHeight = Math.max(titleLines.length * lineHeight, lineHeight);
+    const yMid = rowStartY + ((titleLines.length - 1) * lineHeight) / 2;
+
+    // Qty (center)
     const qty = item.qty || 1;
     doc.setTextColor(0, 0, 0);
-    doc.text(qty.toString(), col2X, yPos, { align: "center" });
+    doc.text(qty.toString(), qtyCenterX, yMid, { align: "center" });
 
-    // Unit Price - black color, center aligned (use actual unit_price)
+    // Unit Price (right)
     const unitPrice = item.unitPrice || item.amount;
     doc.setTextColor(0, 0, 0);
-    doc.text(formatCurrency(unitPrice), col3X, yPos, { align: "center" });
+    doc.text(formatCurrency(unitPrice), unitRightX, yMid, { align: "right" });
 
-    // Total - black color, right aligned, bold (amount is the total)
+    // Total (right, bold)
     doc.setTextColor(0, 0, 0);
     doc.setFont("helvetica", "bold");
-    doc.text(formatCurrency(item.amount), col4X, yPos, { align: "right" });
+    doc.text(formatCurrency(item.amount), totalRightX, yMid, { align: "right" });
 
-    yPos += 8;
-    
-    // Row divider
+    // Advance cursor + divider
+    yPos = rowStartY + rowHeight + 6;
     doc.setDrawColor(...borderColor);
     doc.setLineWidth(0.2);
-    doc.line(tableX, yPos - 2, tableX + contentWidth, yPos - 2);
+    doc.line(tableX, yPos - 3, tableX + contentWidth, yPos - 3);
   });
 
-  yPos += 8;
+  yPos += 2;
 
   // ===================== SUMMARY SECTION =====================
   const summaryX = pageWidth - margin - 75;
