@@ -193,7 +193,7 @@ export const generateInvoicePdf = async (invoice: Invoice, company?: Company) =>
   doc.setTextColor(...mutedColor);
   doc.setFont("helvetica", "normal");
   doc.text("INVOICE DATE :", pageWidth - margin - 48, yPos + 4);
-  doc.setTextColor(...textColor);
+  doc.setTextColor(0, 0, 0); // Black
   doc.setFont("helvetica", "bold");
   doc.text(formatDate(invoice.date), pageWidth - margin, yPos + 4, { align: "right" });
 
