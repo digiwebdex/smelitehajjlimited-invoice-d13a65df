@@ -258,10 +258,10 @@ export const generateInvoicePdf = async (
 
   // ===================== ITEMS TABLE =====================
   const tableX = margin;
-  // Fixed column positions for proper alignment
+  // Fixed column positions for proper alignment - adjusted for better spacing
   const col1X = tableX; // Description - left aligned
-  const col2X = tableX + contentWidth * 0.55; // Qty - center aligned
-  const col3X = tableX + contentWidth * 0.75; // Unit Price - right aligned
+  const col2X = tableX + contentWidth * 0.50; // Qty - center aligned
+  const col3X = tableX + contentWidth * 0.68; // Unit Price - center aligned  
   const col4X = tableX + contentWidth; // Total - right aligned
 
   // Table Header with underline
@@ -270,7 +270,7 @@ export const generateInvoicePdf = async (
   doc.setFont("helvetica", "bold");
   doc.text("DESCRIPTION", col1X, yPos);
   doc.text("QTY", col2X, yPos, { align: "center" });
-  doc.text("UNIT PRICE", col3X, yPos, { align: "right" });
+  doc.text("UNIT PRICE", col3X, yPos, { align: "center" });
   doc.text("TOTAL", col4X, yPos, { align: "right" });
 
   yPos += 3;
@@ -293,10 +293,10 @@ export const generateInvoicePdf = async (
     doc.setTextColor(0, 0, 0);
     doc.text(qty.toString(), col2X, yPos, { align: "center" });
 
-    // Unit Price - black color, right aligned (use actual unit_price)
+    // Unit Price - black color, center aligned (use actual unit_price)
     const unitPrice = item.unitPrice || item.amount;
     doc.setTextColor(0, 0, 0);
-    doc.text(formatCurrency(unitPrice), col3X, yPos, { align: "right" });
+    doc.text(formatCurrency(unitPrice), col3X, yPos, { align: "center" });
 
     // Total - black color, right aligned, bold (amount is the total)
     doc.setTextColor(0, 0, 0);
