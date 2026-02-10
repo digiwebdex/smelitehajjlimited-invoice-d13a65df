@@ -4,6 +4,12 @@ import { ThemeSettings, defaultTheme } from "@/types/theme";
 import { BrandSettings, defaultBranding } from "@/types/branding";
 import { numberToWords } from "@/lib/numberToWords";
 
+const getOrdinal = (n: number): string => {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+
 interface InvoiceItemData {
   id: string;
   title: string;
@@ -346,7 +352,7 @@ export const ThemedInvoiceDocument = ({
             Payment History
           </h4>
           <div className="space-y-3">
-            {installments.map((pay) => (
+            {installments.map((pay, idx) => (
               <div
                 key={pay.id}
                 className="flex justify-between items-center pl-4 py-2"
@@ -369,7 +375,7 @@ export const ThemedInvoiceDocument = ({
                     Advance
                   </span>
                   <span className="text-sm" style={{ color: t.subtotal_text_color }}>
-                    — Advance Payment
+                    — {getOrdinal(idx + 1)} Payment
                   </span>
                 </div>
                 <div className="font-bold text-lg" style={{ color: t.accent_color }}>

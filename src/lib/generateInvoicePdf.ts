@@ -5,6 +5,12 @@ import { ThemeSettings, defaultTheme, hexToRgb } from "@/types/theme";
 import { BrandSettings, defaultBranding } from "@/types/branding";
 import { numberToWords } from "@/lib/numberToWords";
 
+const getOrdinal = (n: number): string => {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+
 const formatCurrency = (amount: number): string => {
   // Use "Tk" instead of "৳" because jsPDF doesn't support Bengali Unicode with default fonts
   return `Tk ${new Intl.NumberFormat("en-BD", {
@@ -460,7 +466,7 @@ export const generateInvoicePdf = async (
     yPos += 6;
 
     // Payment entries
-    invoice.installments.forEach((inst) => {
+    invoice.installments.forEach((inst, idx) => {
       // Left accent bar (gray)
       doc.setFillColor(209, 213, 219); // Gray-300
       doc.rect(margin + 5, yPos, 1.5, 8, "F");
@@ -489,7 +495,7 @@ export const generateInvoicePdf = async (
       doc.setTextColor(...mutedColor);
       doc.setFontSize(7);
       doc.setFont("helvetica", "normal");
-      doc.text("— Advance Payment", margin + 90, yPos + 5);
+      doc.text(`— ${getOrdinal(idx + 1)} Payment`, margin + 90, yPos + 5);
 
       // Amount (teal color, bold)
       doc.setTextColor(...accentColor);

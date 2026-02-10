@@ -3,6 +3,12 @@ import { BrandSettings, defaultBranding } from "@/types/branding";
 import { InvoiceQRCode } from "@/components/InvoiceQRCode";
 import { numberToWords } from "@/lib/numberToWords";
 
+const getOrdinal = (n: number): string => {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+};
+
 interface InvoiceItemData {
   id: string;
   title: string;
@@ -373,7 +379,7 @@ export const A4PrintTemplate = ({
           <div style={{ color: t.primary_color, fontSize: "9pt", fontWeight: "bold", marginBottom: "3mm", textTransform: "uppercase" }}>
             Payment History
           </div>
-          {installments.map((pay) => (
+          {installments.map((pay, idx) => (
             <div key={pay.id} style={{ borderLeft: `1.5mm solid ${t.border_color}`, paddingLeft: "3mm", marginBottom: "3mm" }}>
               <span style={{ color: t.primary_color, fontSize: "8pt", marginRight: "3mm" }}>
                 {formatDate(pay.paid_date)}
@@ -402,7 +408,7 @@ export const A4PrintTemplate = ({
               >
                 Advance
               </span>
-              <span style={{ color: t.subtotal_text_color, fontSize: "7pt" }}>— Advance Payment</span>
+              <span style={{ color: t.subtotal_text_color, fontSize: "7pt" }}>— {getOrdinal(idx + 1)} Payment</span>
               <span style={{ float: "right", color: t.accent_color, fontSize: "10pt", fontWeight: "bold" }}>
                 {formatCurrency(pay.amount)}
               </span>
