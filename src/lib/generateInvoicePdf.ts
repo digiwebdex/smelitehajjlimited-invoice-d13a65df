@@ -319,10 +319,10 @@ export const generateInvoicePdf = async (
     const titleLines = doc.splitTextToSize(title, descColWidth - 2);
 
     const textBlockHeight = titleLines.length * lineHeight;
-    const totalRowHeight = Math.max(textBlockHeight + 4, minRowHeight);
+    const totalRowHeight = Math.max(textBlockHeight + 2.8, minRowHeight);
 
-    // Vertical center Y for single-line columns (baseline offset ~1mm)
-    const yCenter = rowTopY + totalRowHeight / 2 + 1;
+    // Vertical center Y for single-line columns (baseline offset ~0.8mm)
+    const yCenter = rowTopY + totalRowHeight / 2 + 0.8;
 
     // Description text - vertically centered
     const descStartY = rowTopY + (totalRowHeight - textBlockHeight) / 2 + lineHeight * 0.7;
@@ -348,7 +348,7 @@ export const generateInvoicePdf = async (
     doc.setDrawColor(...borderColor);
     doc.setLineWidth(0.2);
     doc.line(tableX, yPos, tableX + contentWidth, yPos);
-    yPos += 3;
+    yPos += 2;
   });
 
   yPos += 2;
