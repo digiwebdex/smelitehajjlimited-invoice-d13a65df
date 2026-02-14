@@ -91,10 +91,23 @@ export const generateInvoicePdf = async (
     doc.setFillColor(255, 255, 255);
     doc.circle(logoCenterX, logoCenterY, logoSize / 2, "F");
     
-    // Add the image centered within the circle (slightly smaller to fit)
-    const imageSize = logoSize * 0.82;
+    // Add the image inscribed within the circle (side = diameter / √2)
+    const imageSize = logoSize * 0.70;
     const imageOffset = (logoSize - imageSize) / 2;
     doc.addImage(imageData, "PNG", margin + imageOffset, yPos + imageOffset, imageSize, imageSize);
+    
+    // Mask corners outside circle with white arcs (4 corner rectangles)
+    const r = logoSize / 2;
+    const half = imageSize / 2;
+    // Top-left corner
+    doc.setFillColor(255, 255, 255);
+    doc.rect(margin, yPos, imageOffset, imageOffset, "F");
+    // Top-right corner
+    doc.rect(margin + logoSize - imageOffset, yPos, imageOffset, imageOffset, "F");
+    // Bottom-left corner
+    doc.rect(margin, yPos + logoSize - imageOffset, imageOffset, imageOffset, "F");
+    // Bottom-right corner
+    doc.rect(margin + logoSize - imageOffset, yPos + logoSize - imageOffset, imageOffset, imageOffset, "F");
     
     // Draw single clean blue border on top
     doc.setDrawColor(...primaryColor);
@@ -308,7 +321,7 @@ export const generateInvoicePdf = async (
 
     const textBlockHeight = titleLines.length * lineHeight;
     const rowContentHeight = Math.max(textBlockHeight, lineHeight);
-    const minRowHeight = 10;
+    const minRowHeight = 12;
     const totalRowHeight = Math.max(rowPaddingTop + rowContentHeight + rowPaddingBottom, minRowHeight);
 
     // Vertical center Y for single-line columns (baseline)
