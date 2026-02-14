@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Pencil, Printer, Share2, Copy, Mail, MessageCircle, Loader2, FileDown } from "lucide-react";
+import { ArrowLeft, Pencil, Printer, Share2, Copy, Mail, MessageCircle, Loader2, FileDown, PenLine } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ThemedInvoiceDocument } from "@/components/invoice/ThemedInvoiceDocument";
 import { A4PrintTemplate } from "@/components/invoice/A4PrintTemplate";
 import { generateInvoicePdf } from "@/lib/generateInvoicePdf";
+import { QuickEditSheet } from "@/components/invoice/QuickEditSheet";
 import { Invoice, Company } from "@/types";
 import { defaultTheme } from "@/types/theme";
 
@@ -23,6 +25,7 @@ export default function InvoiceView() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [quickEditOpen, setQuickEditOpen] = useState(false);
 
   const { data: invoice, isLoading: invoiceLoading } = useInvoice(id);
   const { data: company, isLoading: companyLoading } = useCompany(invoice?.company_id);
@@ -267,11 +270,18 @@ export default function InvoiceView() {
               </DropdownMenuContent>
             </DropdownMenu>
             <Button
+              variant="outline"
+              onClick={() => setQuickEditOpen(true)}
+            >
+              <PenLine className="h-4 w-4 mr-2" />
+              Quick Edit
+            </Button>
+            <Button
               onClick={() => navigate(`/invoices/${id}/edit`)}
               className="bg-accent hover:bg-accent/90 text-accent-foreground"
             >
               <Pencil className="h-4 w-4 mr-2" />
-              Edit
+              Full Edit
             </Button>
           </div>
         </div>
@@ -299,6 +309,12 @@ export default function InvoiceView() {
             branding={branding}
           />
         </div>
+        {/* Quick Edit Sheet */}
+        <QuickEditSheet
+          open={quickEditOpen}
+          onOpenChange={setQuickEditOpen}
+          invoice={invoice}
+        />
       </div>
     </AppLayout>
   );
