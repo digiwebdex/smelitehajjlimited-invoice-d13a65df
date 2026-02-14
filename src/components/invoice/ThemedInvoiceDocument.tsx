@@ -254,15 +254,15 @@ export const ThemedInvoiceDocument = ({
           </thead>
           <tbody>
             {items.map((item) => (
-              <tr key={item.id} style={{ borderBottomWidth: '1px', borderBottomColor: t.border_color, height: '48px' }}>
-                <td className="py-4 font-medium text-black align-middle">
+              <tr key={item.id} style={{ borderBottomWidth: '1px', borderBottomColor: t.border_color, height: '26.5px' }}>
+                <td className="py-1.5 font-medium text-black align-middle">
                   {item.title || "—"}
                 </td>
-                <td className="py-4 text-left text-black align-middle">{item.qty || 1}</td>
-                <td className="py-4 text-left text-black align-middle">
+                <td className="py-1.5 text-left text-black align-middle">{item.qty || 1}</td>
+                <td className="py-1.5 text-left text-black align-middle">
                   {formatCurrency(item.unit_price || item.amount)}
                 </td>
-                <td className="py-4 text-right font-semibold text-black align-middle">
+                <td className="py-1.5 text-right font-semibold text-black align-middle">
                   {formatCurrency(item.amount)}
                 </td>
               </tr>
