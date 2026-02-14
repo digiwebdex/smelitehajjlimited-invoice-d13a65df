@@ -190,7 +190,7 @@ export const generateInvoicePdf = async (
   const statusWidth = doc.getTextWidth(statusText) + 8;
   
   doc.setFillColor(...statusBgColor);
-  doc.roundedRect(pageWidth - margin - statusWidth, yPos + 16, statusWidth, 6, 2, 2, "F");
+  doc.roundedRect(pageWidth - margin - statusWidth, yPos + 16, statusWidth, 6, 3, 3, "F");
   doc.setTextColor(...statusColor);
   doc.setFontSize(8);
   doc.setFont("helvetica", "bold");
