@@ -306,8 +306,7 @@ export const generateInvoicePdf = async (
 
   // Table Rows (wrap description; vertically center all columns within the row)
   const lineHeight = 4.2;
-  const rowPaddingTop = 4;
-  const rowPaddingBottom = 4;
+  const minRowHeight = 8;
   invoice.items.forEach((item) => {
     const rowTopY = yPos;
 
@@ -320,15 +319,13 @@ export const generateInvoicePdf = async (
     const titleLines = doc.splitTextToSize(title, descColWidth - 2);
 
     const textBlockHeight = titleLines.length * lineHeight;
-    const rowContentHeight = Math.max(textBlockHeight, lineHeight);
-    const minRowHeight = 8;
-    const totalRowHeight = Math.max(rowPaddingTop + rowContentHeight + rowPaddingBottom, minRowHeight);
+    const totalRowHeight = Math.max(textBlockHeight + 4, minRowHeight);
 
-    // Vertical center Y for single-line columns (baseline)
-    const yCenter = rowTopY + rowPaddingTop + rowContentHeight / 2 + 1;
+    // Vertical center Y for single-line columns (baseline offset ~1mm)
+    const yCenter = rowTopY + totalRowHeight / 2 + 1;
 
     // Description text - vertically centered
-    const descStartY = rowTopY + rowPaddingTop + (rowContentHeight - textBlockHeight) / 2 + lineHeight * 0.7;
+    const descStartY = rowTopY + (totalRowHeight - textBlockHeight) / 2 + lineHeight * 0.7;
     doc.text(titleLines, descX, descStartY);
 
     // Qty (left aligned, vertically centered)
@@ -351,7 +348,7 @@ export const generateInvoicePdf = async (
     doc.setDrawColor(...borderColor);
     doc.setLineWidth(0.2);
     doc.line(tableX, yPos, tableX + contentWidth, yPos);
-    yPos += 4;
+    yPos += 3;
   });
 
   yPos += 2;
