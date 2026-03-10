@@ -232,7 +232,7 @@ app.post('/api/companies', authenticate, async (req, res) => {
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING *`,
       [req.user.id, name, tagline, email, phone, address, logo_url, address_line1, address_line2, website, thank_you_text, show_qr_code, footer_alignment]
     );
-    res.json(rows[0]);
+    res.json({ data: rows[0] });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
