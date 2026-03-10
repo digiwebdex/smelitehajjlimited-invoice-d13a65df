@@ -315,7 +315,7 @@ app.get('/api/invoices/:id', authenticate, async (req, res) => {
     invoice.items = items;
     invoice.installments = installments;
 
-    res.json(invoice);
+    res.json({ data: invoice });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
