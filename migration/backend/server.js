@@ -209,7 +209,7 @@ app.get('/api/companies', authenticate, async (req, res) => {
       'SELECT * FROM companies WHERE user_id = $1 ORDER BY created_at DESC',
       [req.user.id]
     );
-    res.json(rows);
+    res.json({ data: rows });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
