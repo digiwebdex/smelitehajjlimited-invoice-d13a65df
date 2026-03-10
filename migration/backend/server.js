@@ -287,7 +287,7 @@ app.get('/api/invoices', authenticate, async (req, res) => {
       }
     }
 
-    res.json(invoices);
+    res.json({ data: invoices });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
