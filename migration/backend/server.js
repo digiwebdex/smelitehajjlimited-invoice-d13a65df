@@ -298,7 +298,7 @@ app.get('/api/invoices/next-number', authenticate, async (req, res) => {
     const { rows } = await pool.query('SELECT COUNT(*) as count FROM invoices WHERE user_id = $1', [req.user.id]);
     const year = new Date().getFullYear();
     const nextNumber = (parseInt(rows[0].count) || 0) + 1;
-    res.json({ invoiceNumber: `INV-${year}-${nextNumber.toString().padStart(3, '0')}` });
+    res.json({ data: { next_number: `INV-${year}-${nextNumber.toString().padStart(3, '0')}` } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
