@@ -446,7 +446,19 @@ app.get('/api/admin/check', authenticate, async (req, res) => {
       'SELECT 1 FROM user_roles WHERE user_id = $1 AND role = $2',
       [req.user.id, 'admin']
     );
-    res.json({ isAdmin: rows.length > 0 });
+    res.json({ data: { is_admin: rows.length > 0 } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/admin/check-approval', authenticate, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      'SELECT is_approved FROM profiles WHERE user_id = $1',
+      [req.user.id]
+    );
+    res.json({ data: { is_approved: rows[0]?.is_approved ?? false } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -460,7 +472,7 @@ app.get('/api/admin/users', authenticate, requireAdmin, async (req, res) => {
       LEFT JOIN users u ON p.user_id = u.id 
       ORDER BY p.created_at DESC
     `);
-    res.json(rows);
+    res.json({ data: rows });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -475,7 +487,7 @@ app.get('/api/admin/pending-users', authenticate, requireAdmin, async (req, res)
       WHERE p.is_approved = false 
       ORDER BY p.created_at DESC
     `);
-    res.json(rows);
+    res.json({ data: rows });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -483,9 +495,9 @@ app.get('/api/admin/pending-users', authenticate, requireAdmin, async (req, res)
 
 app.post('/api/admin/approve-user', authenticate, requireAdmin, async (req, res) => {
   try {
-    const { userId } = req.body;
-    await pool.query('UPDATE profiles SET is_approved = true WHERE user_id = $1', [userId]);
-    res.json({ success: true });
+    const { user_id } = req.body;
+    await pool.query('UPDATE profiles SET is_approved = true WHERE user_id = $1', [user_id]);
+    res.json({ data: { success: true } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -493,38 +505,62 @@ app.post('/api/admin/approve-user', authenticate, requireAdmin, async (req, res)
 
 app.post('/api/admin/revoke-user', authenticate, requireAdmin, async (req, res) => {
   try {
-    const { userId } = req.body;
-    await pool.query('UPDATE profiles SET is_approved = false WHERE user_id = $1', [userId]);
-    res.json({ success: true });
+    const { user_id } = req.body;
+    await pool.query('UPDATE profiles SET is_approved = false WHERE user_id = $1', [user_id]);
+    res.json({ data: { success: true } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.post('/api/admin/delete-user', authenticate, requireAdmin, async (req, res) => {
+app.delete('/api/admin/users/:userId', authenticate, requireAdmin, async (req, res) => {
   try {
-    const { userId } = req.body;
-    if (userId === req.user.id) return res.status(400).json({ error: 'Cannot delete yourself' });
-    await pool.query('DELETE FROM users WHERE id = $1', [userId]);
-    res.json({ success: true });
+    if (req.params.userId === req.user.id) return res.status(400).json({ error: 'Cannot delete yourself' });
+    await pool.query('DELETE FROM users WHERE id = $1', [req.params.userId]);
+    res.json({ data: { success: true } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Quick edit invoice (PATCH)
+app.patch('/api/invoices/:id/quick-edit', authenticate, async (req, res) => {
+  try {
+    const { client_name, client_email, client_phone, client_address, notes } = req.body;
+    const { rows } = await pool.query(
+      `UPDATE invoices SET client_name=$1, client_email=$2, client_phone=$3, client_address=$4, notes=$5 
+       WHERE id=$6 AND user_id=$7 RETURNING *`,
+      [client_name, client_email, client_phone, client_address, notes, req.params.id, req.user.id]
+    );
+    res.json({ data: rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Public company view (no auth)
+app.get('/api/public/companies/:id', async (req, res) => {
+  try {
+    const { rows } = await pool.query('SELECT * FROM companies WHERE id = $1', [req.params.id]);
+    res.json({ data: rows[0] || null });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // ============================================
-// THEME SETTINGS ROUTES
+// THEME SETTINGS ROUTES (frontend calls /api/theme)
 // ============================================
-app.get('/api/theme-settings', async (req, res) => {
+app.get('/api/theme', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM theme_settings WHERE id = $1', ['00000000-0000-0000-0000-000000000001']);
-    res.json(rows[0] || null);
+    res.json({ data: rows[0] || null });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.put('/api/theme-settings', authenticate, requireAdmin, async (req, res) => {
+app.put('/api/theme', authenticate, async (req, res) => {
   try {
     const fields = req.body;
     const keys = Object.keys(fields).filter(k => k !== 'id' && k !== 'created_at' && k !== 'updated_at');
@@ -534,25 +570,44 @@ app.put('/api/theme-settings', authenticate, requireAdmin, async (req, res) => {
       `UPDATE theme_settings SET ${sets} WHERE id = $1 RETURNING *`,
       ['00000000-0000-0000-0000-000000000001', ...vals]
     );
-    res.json(rows[0]);
+    res.json({ data: rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/theme/reset', authenticate, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `UPDATE theme_settings SET 
+        primary_color='#1B2B5B', secondary_color='#C8A951', accent_color='#2563eb',
+        header_text_color='#1B2B5B', invoice_title_color='#1B2B5B', subtotal_text_color='#374151',
+        paid_text_color='#16a34a', balance_bg_color='#1B2B5B', balance_text_color='#FFFFFF',
+        table_header_bg='#1B2B5B', table_header_text='#FFFFFF', border_color='#e5e7eb',
+        badge_paid_color='#16a34a', badge_partial_color='#f59e0b', badge_unpaid_color='#ef4444',
+        footer_text_color='#6b7280'
+       WHERE id = $1 RETURNING *`,
+      ['00000000-0000-0000-0000-000000000001']
+    );
+    res.json({ data: rows[0] });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // ============================================
-// BRAND SETTINGS ROUTES
+// BRAND SETTINGS ROUTES (frontend calls /api/branding)
 // ============================================
-app.get('/api/brand-settings', async (req, res) => {
+app.get('/api/branding', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM global_brand_settings WHERE id = $1', ['00000000-0000-0000-0000-000000000002']);
-    res.json(rows[0] || null);
+    res.json({ data: rows[0] || null });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.put('/api/brand-settings', authenticate, requireAdmin, async (req, res) => {
+app.put('/api/branding', authenticate, async (req, res) => {
   try {
     const fields = req.body;
     const keys = Object.keys(fields).filter(k => k !== 'id' && k !== 'created_at' && k !== 'updated_at');
@@ -562,28 +617,23 @@ app.put('/api/brand-settings', authenticate, requireAdmin, async (req, res) => {
       `UPDATE global_brand_settings SET ${sets} WHERE id = $1 RETURNING *`,
       ['00000000-0000-0000-0000-000000000002', ...vals]
     );
-    res.json(rows[0]);
+    res.json({ data: rows[0] });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// ============================================
-// USER PROFILE ROUTES
-// ============================================
-app.get('/api/profile', authenticate, async (req, res) => {
+app.post('/api/branding/reset', authenticate, async (req, res) => {
   try {
-    const { rows } = await pool.query('SELECT * FROM profiles WHERE user_id = $1', [req.user.id]);
-    res.json(rows[0] || null);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-app.get('/api/user-roles', authenticate, async (req, res) => {
-  try {
-    const { rows } = await pool.query('SELECT * FROM user_roles WHERE user_id = $1', [req.user.id]);
-    res.json(rows);
+    const { rows } = await pool.query(
+      `UPDATE global_brand_settings SET 
+        company_name='SM Elite Hajj Limited', tagline=NULL, address_line1=NULL, address_line2=NULL,
+        phone=NULL, email=NULL, website=NULL, thank_you_text=NULL, show_qr_code=true,
+        footer_alignment='center', company_logo=NULL
+       WHERE id = $1 RETURNING *`,
+      ['00000000-0000-0000-0000-000000000002']
+    );
+    res.json({ data: rows[0] });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
