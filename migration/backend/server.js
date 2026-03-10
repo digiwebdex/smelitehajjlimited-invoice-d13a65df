@@ -218,7 +218,7 @@ app.get('/api/companies', authenticate, async (req, res) => {
 app.get('/api/companies/:id', authenticate, async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM companies WHERE id = $1 AND user_id = $2', [req.params.id, req.user.id]);
-    res.json(rows[0] || null);
+    res.json({ data: rows[0] || null });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
