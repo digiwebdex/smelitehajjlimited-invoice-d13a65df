@@ -128,6 +128,10 @@ app.post('/api/auth/login', async (req, res) => {
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) return res.status(400).json({ error: 'Invalid credentials' });
 
+    // Get profile info
+    const { rows: profiles } = await pool.query('SELECT full_name FROM profiles WHERE user_id = $1', [user.id]);
+    const fullName = profiles[0]?.full_name || user.raw_user_meta_data?.full_name || null;
+
     const token = jwt.sign(
       { id: user.id, email: user.email },
       JWT_SECRET,
@@ -135,9 +139,25 @@ app.post('/api/auth/login', async (req, res) => {
     );
 
     res.json({
-      session: { access_token: token },
-      user: { id: user.id, email: user.email, user_metadata: user.raw_user_meta_data }
+      data: {
+        token,
+        user: { id: user.id, email: user.email, full_name: fullName }
+      }
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get current user profile (token validation)
+app.get('/api/auth/profile', authenticate, async (req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT u.id, u.email, p.full_name 
+       FROM users u LEFT JOIN profiles p ON p.user_id = u.id 
+       WHERE u.id = $1`, [req.user.id]);
+    if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
+    res.json({ data: rows[0] });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
