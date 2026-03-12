@@ -69,9 +69,15 @@ INSERT INTO invoice_items (id, invoice_id, title, qty, unit_price, amount, creat
 ('d81c0c44-6134-47fb-99be-110f2f43568a', '3acd8c07-1595-4735-8e33-f05e17e7d228', 'SOFT COVER', 198, 15.00, 2970.00, '2026-03-08 08:12:01.120601+00')
 ON CONFLICT (id) DO NOTHING;
 
--- Get remaining invoice_items
+-- Remaining invoice items (from later invoices)
 INSERT INTO invoice_items (id, invoice_id, title, qty, unit_price, amount, created_at) VALUES
-('c5e3a2d1-1234-4567-8901-abcdef123456', '3acd8c07-1595-4735-8e33-f05e17e7d228', 'RIBBON', 179, 10.00, 1790.00, '2026-03-08 08:12:01.120601+00')
+('623e7401-bfc3-44fe-9f4b-0d72b2b0339b', '0e38391c-70d0-40d2-b8f8-a1c4d919bbad', '79th FTC Ribbon 2 CM', 430, 150.00, 64500.00, '2026-03-08 08:43:28.840057+00'),
+('de0125eb-3950-4133-af94-d5d907b20b64', '0e38391c-70d0-40d2-b8f8-a1c4d919bbad', 'Transparent VIP ID Card Holder', 430, 130.00, 55900.00, '2026-03-08 08:43:28.840057+00'),
+('dbb93815-a02b-4dec-baa1-eec0765a64d8', '0e4a33ad-ce1c-41b1-9ea4-46825e688a8b', 'Ring File Folder', 13, 2850.00, 37050.00, '2026-03-08 08:44:54.951983+00'),
+('27f908fe-70e8-49e3-a189-a294b429b330', 'daf2900c-5c79-4407-92b4-674fdfb8fb6b', 'RF ID CARD', 117, 60.00, 7020.00, '2026-03-08 11:11:37.933756+00'),
+('b338155e-7a43-4d0f-9bb9-2a804bfad5df', 'daf2900c-5c79-4407-92b4-674fdfb8fb6b', 'SOFT COVER', 117, 15.00, 1755.00, '2026-03-08 11:11:37.933756+00'),
+('0ef2acd1-95d5-47ad-bd76-3cbae2cff6f1', '23535edf-a584-41e1-9f30-159bebc83268', 'RF ID Card', 85, 600.00, 51000.00, '2026-03-08 11:13:35.116307+00'),
+('91bc6b16-b3a8-4a83-830a-9b5a061b5f53', '23535edf-a584-41e1-9f30-159bebc83268', 'Soft Cover', 81, 15.00, 1215.00, '2026-03-08 11:13:35.116307+00')
 ON CONFLICT (id) DO NOTHING;
 
 -- =============================================
