@@ -19,7 +19,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useInvoices, Invoice, useInvoice } from "@/hooks/useInvoices";
+import { useInvoices, Invoice, useInvoice, useDeleteInvoice } from "@/hooks/useInvoices";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { useCompanies, useCompany } from "@/hooks/useCompanies";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
