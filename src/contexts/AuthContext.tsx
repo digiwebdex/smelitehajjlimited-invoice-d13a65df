@@ -5,6 +5,8 @@ export interface AuthUser {
   id: string;
   email: string;
   full_name?: string;
+  is_approved?: boolean;
+  is_admin?: boolean;
 }
 
 interface AuthContextType {
@@ -66,8 +68,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
       }
 
-      if (result.data?.user) {
-        setUser(result.data.user);
+      const loggedInUser = result.data?.user ?? getStoredUser();
+      if (loggedInUser) {
+        setUser(loggedInUser);
+        setStoredUser(loggedInUser);
       }
 
       return { success: true };

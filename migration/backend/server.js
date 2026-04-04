@@ -77,6 +77,29 @@ const requireAdmin = async (req, res, next) => {
   }
 };
 
+const getUserAccessState = async (userId) => {
+  const { rows } = await pool.query(
+    `SELECT
+      u.id,
+      u.email,
+      COALESCE(p.full_name, u.raw_user_meta_data->>'full_name') AS full_name,
+      COALESCE(p.is_approved, false) AS is_approved,
+      EXISTS(
+        SELECT 1
+        FROM user_roles ur
+        WHERE ur.user_id = u.id
+          AND ur.role = 'admin'
+      ) AS is_admin
+     FROM users u
+     LEFT JOIN profiles p ON p.user_id = u.id
+     WHERE u.id = $1
+     LIMIT 1`,
+    [userId]
+  );
+
+  return rows[0] || null;
+};
+
 // ============================================
 // HEALTH CHECK
 // ============================================
@@ -131,9 +154,7 @@ app.post('/api/auth/login', async (req, res) => {
     const valid = await bcrypt.compare(password, storedHash);
     if (!valid) return res.status(400).json({ error: 'Invalid credentials' });
 
-    // Get profile info
-    const { rows: profiles } = await pool.query('SELECT full_name FROM profiles WHERE user_id = $1', [user.id]);
-    const fullName = profiles[0]?.full_name || user.raw_user_meta_data?.full_name || null;
+    const accessUser = await getUserAccessState(user.id);
 
     const token = jwt.sign(
       { id: user.id, email: user.email },
@@ -144,7 +165,13 @@ app.post('/api/auth/login', async (req, res) => {
     res.json({
       data: {
         token,
-        user: { id: user.id, email: user.email, full_name: fullName }
+        user: accessUser || {
+          id: user.id,
+          email: user.email,
+          full_name: user.raw_user_meta_data?.full_name || null,
+          is_approved: false,
+          is_admin: false,
+        }
       }
     });
   } catch (err) {
@@ -155,12 +182,9 @@ app.post('/api/auth/login', async (req, res) => {
 // Get current user profile (token validation)
 app.get('/api/auth/profile', authenticate, async (req, res) => {
   try {
-    const { rows } = await pool.query(
-      `SELECT u.id, u.email, p.full_name 
-       FROM users u LEFT JOIN profiles p ON p.user_id = u.id 
-       WHERE u.id = $1`, [req.user.id]);
-    if (rows.length === 0) return res.status(404).json({ error: 'User not found' });
-    res.json({ data: rows[0] });
+    const userProfile = await getUserAccessState(req.user.id);
+    if (!userProfile) return res.status(404).json({ error: 'User not found' });
+    res.json({ data: userProfile });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
