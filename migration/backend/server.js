@@ -77,6 +77,29 @@ const requireAdmin = async (req, res, next) => {
   }
 };
 
+const getUserAccessState = async (userId) => {
+  const { rows } = await pool.query(
+    `SELECT
+      u.id,
+      u.email,
+      COALESCE(p.full_name, u.raw_user_meta_data->>'full_name') AS full_name,
+      COALESCE(p.is_approved, false) AS is_approved,
+      EXISTS(
+        SELECT 1
+        FROM user_roles ur
+        WHERE ur.user_id = u.id
+          AND ur.role = 'admin'
+      ) AS is_admin
+     FROM users u
+     LEFT JOIN profiles p ON p.user_id = u.id
+     WHERE u.id = $1
+     LIMIT 1`,
+    [userId]
+  );
+
+  return rows[0] || null;
+};
+
 // ============================================
 // HEALTH CHECK
 // ============================================
